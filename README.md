@@ -1,5 +1,5 @@
 
-## quickstart-amazon-selling-partner-api-amazon-selling-partner-api-notifications—Quick Start
+## quickstart-amazon-selling-partner-api-notifications Quick Start
 
 For architectural details, step-by-step instructions, and customization options, see the [deployment guide](https://aws-quickstart.github.io/quickstart-amazon-selling-partner-api-amazon-selling-partner-api-notifications/).
 
