@@ -1,0 +1,481 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  NotificationsSubscriberLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SPAPINotificationsSubscriber
+      Description: Lambda function that subscribes the seller to SP-API notifications
+      Code:
+        S3Bucket: sp-api-quick-start-notifications
+        S3Key: notifications-subscriber-1.0.jar
+      Handler: lambda.NotificationsSubscriberHandler
+      Role: !GetAtt 
+        - NotificationsSubscriberLambdaExecutionRole
+        - Arn
+      Runtime: java11
+      MemorySize: 512
+      Timeout: 60
+      Environment:
+        Variables:
+          IAM_USER_CREDENTIALS_SECRET_ARN: SPAPIUserCredentials
+          SP_API_APP_CREDENTIALS_SECRET_ARN: SPAPIAppCredentials
+          ROLE_ARN: !Ref RoleArn
+          ENCRYPTION_KEY_ARN: !GetAtt 
+            - TokenStorageKey
+            - Arn
+          SELLING_PARTNERS_TABLE_NAME: !Ref SellingPartnersDynamoDBTable
+          SQS_QUEUE_ARN: !GetAtt 
+            - ReportsNotificationsProcessorQueue
+            - Arn
+  NotificationsSubscriberLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: NotificationsSubscriberLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: SecretsReaderPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'secretsmanager:GetSecretValue'
+                Resource:
+                  - !Ref SPAPIUserCredentials
+                  - !Ref SPAPIAppCredentials
+        - PolicyName: DynamoDBPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'dynamodb:GetItem'
+                Resource: !GetAtt 
+                  - SellingPartnersDynamoDBTable
+                  - Arn
+  SPAPIUserCredentials:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: SPAPIUserCredentials
+      Description: Secret containing SP-API IAM User credentials
+      SecretString: !Sub 
+        - >-
+          {"AccessKeyId": "${AccessKeyIdValue}", "SecretKey":
+          "${SecretKeyValue}"}
+        - AccessKeyIdValue: !Ref AccessKey
+          SecretKeyValue: !Ref SecretKey
+  SPAPIAppCredentials:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: SPAPIAppCredentials
+      Description: Secret containing SP-API app credentials
+      SecretString: !Sub 
+        - >-
+          {"AppClientId": "${AppClientIdValue}", "AppClientSecret":
+          "${AppClientSecretValue}"}
+        - AppClientIdValue: !Ref ClientId
+          AppClientSecretValue: !Ref ClientSecret
+  ReportsS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub 'sp-api-reports-bucket-${AWS::Region}-${AWS::AccountId}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+  ReportsNotificationsProcessorLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SPAPIReportsNotificationsProcessor
+      Description: >-
+        Lambda function that processes incoming reports notifications from
+        SP-API
+      Code:
+        S3Bucket: sp-api-quick-start-notifications
+        S3Key: report-notification-processor-1.0.jar
+      Handler: lambda.ReportNotificationProcessorHandler
+      Role: !GetAtt 
+        - ReportsNotificationsProcessorLambdaExecutionRole
+        - Arn
+      Runtime: java11
+      MemorySize: 256
+      Timeout: 60
+  ReportsNotificationsProcessorLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: ReportsNotificationsProcessorLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: LambdaFunctionPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'SQS:DeleteMessage'
+                  - 'SQS:GetQueueAttributes'
+                  - 'SQS:ReceiveMessage'
+                Resource: !GetAtt 
+                  - ReportsNotificationsProcessorQueue
+                  - Arn
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+  ReportsNotificationsProcessorEventSourceMapping:
+    Type: 'AWS::Lambda::EventSourceMapping'
+    Properties:
+      BatchSize: 1
+      Enabled: true
+      EventSourceArn: !GetAtt 
+        - ReportsNotificationsProcessorQueue
+        - Arn
+      FunctionName: !GetAtt 
+        - ReportsNotificationsProcessorLambdaFunction
+        - Arn
+  ReportsNotificationsProcessorQueue:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: !Ref ReportsNotificationsProcessorQueueName
+      VisibilityTimeout: 300
+  ReportsNotificationsProcessorQueuePolicy:
+    Type: 'AWS::SQS::QueuePolicy'
+    Properties:
+      Queues:
+        - !Ref ReportsNotificationsProcessorQueue
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'SQS:SendMessage'
+              - 'SQS:GetQueueAttributes'
+            Resource: !GetAtt 
+              - ReportsNotificationsProcessorQueue
+              - Arn
+            Principal:
+              AWS:
+                - '437568002678'
+  ReportDocumentStorageLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SPAPIReportDocumentStorage
+      Description: >-
+        Lambda function that copies the generated report into the selling
+        partner's account
+      Code:
+        S3Bucket: sp-api-quick-start-notifications
+        S3Key: report-document-storage-1.0.jar
+      Handler: lambda.ReportDocumentStorageHandler
+      Role: !GetAtt 
+        - ReportDocumentStorageLambdaExecutionRole
+        - Arn
+      Runtime: java11
+      MemorySize: 512
+      Timeout: 60
+      Environment:
+        Variables:
+          DESTINATION_S3_BUCKET_NAME: !Ref ReportsS3Bucket
+  ReportDocumentStorageLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: ReportDocumentStorageLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: S3WriterPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 's3:PutObject'
+                Resource: !Sub 
+                  - '${BucketArn}/*'
+                  - BucketArn: !GetAtt 
+                      - ReportsS3Bucket
+                      - Arn
+  ReportCreatorLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SPAPIReportCreator
+      Description: Lambda function that submit a report creation request to SP-API
+      Code:
+        S3Bucket: sp-api-quick-start-notifications
+        S3Key: report-creator-1.0.jar
+      Handler: lambda.ReportCreatorHandler
+      Role: !GetAtt 
+        - ReportCreatorLambdaExecutionRole
+        - Arn
+      Runtime: java11
+      MemorySize: 512
+      Timeout: 60
+      Environment:
+        Variables:
+          IAM_USER_CREDENTIALS_SECRET_ARN: SPAPIUserCredentials
+          SP_API_APP_CREDENTIALS_SECRET_ARN: SPAPIAppCredentials
+          ROLE_ARN: !Ref RoleArn
+          ENCRYPTION_KEY_ARN: !GetAtt 
+            - TokenStorageKey
+            - Arn
+          SELLING_PARTNERS_TABLE_NAME: !Ref SellingPartnersDynamoDBTable
+          REPORTS_TABLE_NAME: !Ref ReportsDynamoDBTable
+  ReportCreatorLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: ReportCreatorLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: SecretsReaderPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'secretsmanager:GetSecretValue'
+                Resource:
+                  - !Ref SPAPIUserCredentials
+                  - !Ref SPAPIAppCredentials
+        - PolicyName: DynamoDBReaderPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'dynamodb:GetItem'
+                Resource: !GetAtt 
+                  - SellingPartnersDynamoDBTable
+                  - Arn
+        - PolicyName: DynamoDBWriterPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'dynamodb:PutItem'
+                Resource: !GetAtt 
+                  - ReportsDynamoDBTable
+                  - Arn
+  ReportDocumentRetrievalLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SPAPIReportDocumentRetrieval
+      Description: Lambda function that retrieves a report document from SP-API
+      Code:
+        S3Bucket: sp-api-quick-start-notifications
+        S3Key: report-document-retrieval-1.0.jar
+      Handler: lambda.ReportDocumentRetrievalHandler
+      Role: !GetAtt 
+        - ReportDocumentRetrievalLambdaExecutionRole
+        - Arn
+      Runtime: java11
+      MemorySize: 512
+      Timeout: 60
+      Environment:
+        Variables:
+          IAM_USER_CREDENTIALS_SECRET_ARN: SPAPIUserCredentials
+          SP_API_APP_CREDENTIALS_SECRET_ARN: SPAPIAppCredentials
+          ROLE_ARN: !Ref RoleArn
+          ENCRYPTION_KEY_ARN: !GetAtt 
+            - TokenStorageKey
+            - Arn
+          SELLING_PARTNERS_TABLE_NAME: !Ref SellingPartnersDynamoDBTable
+          REPORTS_TABLE_NAME: !Ref ReportsDynamoDBTable
+  ReportDocumentRetrievalLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: ReportDocumentRetrievalLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: SecretsReaderPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'secretsmanager:GetSecretValue'
+                Resource:
+                  - !Ref SPAPIUserCredentials
+                  - !Ref SPAPIAppCredentials
+        - PolicyName: DynamoDBReaderPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'dynamodb:GetItem'
+                Resource:
+                  - !GetAtt 
+                    - SellingPartnersDynamoDBTable
+                    - Arn
+                  - !GetAtt 
+                    - ReportsDynamoDBTable
+                    - Arn
+  TokenStorageLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: SPAPITokenStorage
+      Description: Lambda function that stores the selling partner's token into DynamoDB
+      Code:
+        S3Bucket: sp-api-quick-start-notifications
+        S3Key: token-storage-1.0.jar
+      Handler: lambda.TokenStorageHandler
+      Role: !GetAtt 
+        - TokenStorageLambdaExecutionRole
+        - Arn
+      Runtime: java11
+      MemorySize: 512
+      Timeout: 60
+      Environment:
+        Variables:
+          ENCRYPTION_KEY_ARN: !GetAtt 
+            - TokenStorageKey
+            - Arn
+          SELLING_PARTNERS_TABLE_NAME: !Ref SellingPartnersDynamoDBTable
+  TokenStorageLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: TokenStorageLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: DynamoDBPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:PutItem'
+                  - 'dynamodb:UpdateItem'
+                Resource: !GetAtt 
+                  - SellingPartnersDynamoDBTable
+                  - Arn
+  TokenStorageKey:
+    Type: 'AWS::KMS::Key'
+    Properties:
+      Description: SP-API token storage encryption key
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: token-storage-key-policy
+        Statement:
+          - Sid: Enable IAM policies
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
+          - Sid: Allow use of the key
+            Effect: Allow
+            Principal:
+              AWS:
+                - !GetAtt 
+                  - TokenStorageLambdaExecutionRole
+                  - Arn
+                - !GetAtt 
+                  - NotificationsSubscriberLambdaExecutionRole
+                  - Arn
+                - !GetAtt 
+                  - ReportCreatorLambdaExecutionRole
+                  - Arn
+                - !GetAtt 
+                  - ReportDocumentRetrievalLambdaExecutionRole
+                  - Arn
+            Action:
+              - 'kms:Encrypt'
+              - 'kms:Decrypt'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:DescribeKey'
+            Resource: '*'
+  SellingPartnersDynamoDBTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: SellingPartners
+      AttributeDefinitions:
+        - AttributeName: SellerId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: SellerId
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+  ReportsDynamoDBTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: SPAPIReports
+      AttributeDefinitions:
+        - AttributeName: ReportId
+          AttributeType: S
+        - AttributeName: SellerId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ReportId
+          KeyType: HASH
+        - AttributeName: SellerId
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+Parameters:
+  ReportsNotificationsProcessorQueueName:
+    Type: String
+    AllowedPattern: '^[0-9a-zA-Z-]+$'
+    Default: sp-api-reports-notifications-queue
+    Description: Name of the SQS queue that will receive reports notifications from SP-API
+  AccessKey:
+    Type: String
+    Description: Access Key of the IAM User
+  SecretKey:
+    Type: String
+    Description: Secret Key of he IAM User
+  RoleArn:
+    Type: String
+    Description: Arn of the IAM Role registered in the SP-API app
+  ClientId:
+    Type: String
+    Description: Client Id of the SP-API app
+  ClientSecret:
+    Type: String
+    Description: Client Secret of the SP-API app
