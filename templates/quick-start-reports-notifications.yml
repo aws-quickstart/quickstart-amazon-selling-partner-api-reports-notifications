@@ -1,4 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
+Description: This template creates the required resources for Reports & Notifications APIs Quick Start
 Resources:
   NotificationsSubscriberLambdaFunction:
     Type: 'AWS::Lambda::Function'
@@ -41,7 +42,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
       Policies:
         - PolicyName: SecretsReaderPolicy
           PolicyDocument:
@@ -135,7 +136,7 @@ Resources:
                   - ReportsNotificationsProcessorQueue
                   - Arn
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
   ReportsNotificationsProcessorEventSourceMapping:
     Type: 'AWS::Lambda::EventSourceMapping'
     Properties:
@@ -203,7 +204,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
       Policies:
         - PolicyName: S3WriterPolicy
           PolicyDocument:
@@ -255,7 +256,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
       Policies:
         - PolicyName: SecretsReaderPolicy
           PolicyDocument:
@@ -323,7 +324,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
       Policies:
         - PolicyName: SecretsReaderPolicy
           PolicyDocument:
@@ -382,7 +383,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
       Policies:
         - PolicyName: DynamoDBPolicy
           PolicyDocument:
@@ -399,6 +400,7 @@ Resources:
     Type: 'AWS::KMS::Key'
     Properties:
       Description: SP-API token storage encryption key
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: token-storage-key-policy
@@ -407,7 +409,21 @@ Resources:
             Effect: Allow
             Principal:
               AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
-            Action: 'kms:*'
+            Action:
+              - 'kms:DescribeKey'
+              - 'kms:CreateGrant'
+              - 'kms:EnableKey'
+              - 'kms:DisableKey'
+              - 'kms:EnableKeyRotation'
+              - 'kms:DisableKeyRotation'
+              - 'kms:GetKeyPolicy'
+              - 'kms:GetKeyRotationStatus'
+              - 'kms:ListGrants'
+              - 'kms:ListKeyPolicies'
+              - 'kms:PutKeyPolicy'
+              - 'kms:RevokeGrant'
+              - 'kms:ScheduleKeyDeletion'
+              - 'kms:CancelKeyDeletion'
             Resource: '*'
           - Sid: Allow use of the key
             Effect: Allow
@@ -428,8 +444,12 @@ Resources:
             Action:
               - 'kms:Encrypt'
               - 'kms:Decrypt'
-              - 'kms:ReEncrypt*'
-              - 'kms:GenerateDataKey*'
+              - 'kms:ReEncryptFrom'
+              - 'kms:ReEncryptTo'
+              - 'kms:GenerateDataKey'
+              - 'kms:GenerateDataKeyWithoutPlaintext'
+              - 'kms:GenerateDataKeyPairWithoutPlaintext'
+              - 'kms:GenerateDataKeyPair'
               - 'kms:DescribeKey'
             Resource: '*'
   SellingPartnersDynamoDBTable:
