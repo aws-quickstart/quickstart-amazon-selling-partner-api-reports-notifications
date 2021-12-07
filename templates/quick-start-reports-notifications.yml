@@ -155,6 +155,13 @@ Resources:
       VisibilityTimeout: 300
   ReportsNotificationsProcessorQueuePolicy:
     Type: 'AWS::SQS::QueuePolicy'
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - EIAMAccountIDInPrincipal
+          ignore_reasons:
+            EIAMAccountIDInPrincipal: Account needed in policy per SP-API documentation https://github.com/amzn/selling-partner-api-docs/blob/main/guides/en-US/use-case-guides/notifications-api-use-case-guide/notifications-use-case-guide-v1.md#step-1-grant-selling-partner-api-permission-to-write-to-your-sqs-queue
     Properties:
       Queues:
         - !Ref ReportsNotificationsProcessorQueue
@@ -398,6 +405,13 @@ Resources:
                   - Arn
   TokenStorageKey:
     Type: 'AWS::KMS::Key'
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - EIAMPolicyWildcardResource
+          ignore_reasons:
+            abc: In a KMS key policy, * wildcard means "this KMS key" and not "any resource" https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html
     Properties:
       Description: SP-API token storage encryption key
       EnableKeyRotation: true
