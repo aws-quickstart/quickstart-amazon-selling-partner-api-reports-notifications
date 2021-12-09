@@ -537,6 +537,16 @@ Resources:
         - AttributeName: SellerId
           KeyType: RANGE
       BillingMode: PAY_PER_REQUEST
+  ReportStorageNotificationSNSTopic:
+    Type: 'AWS::SNS::Topic'
+    Properties:
+      TopicName: SPAPIReportStorageNotificationTopic
+  ReportStorageNotificationSubscription:
+    Type: 'AWS::SNS::Subscription'
+    Properties:
+      TopicArn: !Ref ReportStorageNotificationSNSTopic
+      Protocol: email
+      Endpoint: !Ref ReportStorageNotificationEmail
 Parameters:
   ReportsNotificationsProcessorQueueName:
     Type: String
@@ -558,3 +568,6 @@ Parameters:
   ClientSecret:
     Type: String
     Description: Client Secret of the SP-API app
+  ReportStorageNotificationEmail:
+    Type: String
+    Description: Email address to which report generation updates are sent
