@@ -153,6 +153,7 @@ Resources:
     Properties:
       QueueName: !Ref ReportsNotificationsProcessorQueueName
       VisibilityTimeout: 300
+      KmsMasterKeyId: alias/aws/sqs
   ReportsNotificationsProcessorQueuePolicy:
     Type: 'AWS::SQS::QueuePolicy'
     Metadata:
