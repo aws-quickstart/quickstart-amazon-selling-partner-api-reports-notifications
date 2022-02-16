@@ -109,6 +109,9 @@ Resources:
       Runtime: java11
       MemorySize: 256
       Timeout: 60
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !Ref ReportsNotificationsProcessorStateMachine
   ReportsNotificationsProcessorLambdaExecutionRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -123,7 +126,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Policies:
-        - PolicyName: LambdaFunctionPolicy
+        - PolicyName: SQSPolicy
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -135,6 +138,14 @@ Resources:
                 Resource: !GetAtt 
                   - ReportsNotificationsProcessorQueue
                   - Arn
+        - PolicyName: StepFunctionsPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'states:StartExecution'
+                Resource: !Ref ReportsNotificationsProcessorStateMachine
       ManagedPolicyArns:
         - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
   ReportsNotificationsProcessorEventSourceMapping:
@@ -153,7 +164,6 @@ Resources:
     Properties:
       QueueName: !Ref ReportsNotificationsProcessorQueueName
       VisibilityTimeout: 300
-      KmsMasterKeyId: alias/aws/sqs
   ReportsNotificationsProcessorQueuePolicy:
     Type: 'AWS::SQS::QueuePolicy'
     Metadata:
@@ -548,6 +558,93 @@ Resources:
       TopicArn: !Ref ReportStorageNotificationSNSTopic
       Protocol: email
       Endpoint: !Ref ReportStorageNotificationEmail
+  ReportsNotificationsProcessorStateMachine:
+    Type: 'AWS::StepFunctions::StateMachine'
+    Properties:
+      StateMachineName: ReportsNotificationsProcessor
+      StateMachineType: STANDARD
+      DefinitionS3Location:
+        Bucket: sp-api-quick-start-notifications
+        Key: ReportsNotificationsProcessor.json
+      DefinitionSubstitutions:
+        SPAPIReportStorageNotificationTopicArn: !Ref ReportStorageNotificationSNSTopic
+        SPAPIReportDocumentRetrievalFunctionArn: !GetAtt
+          - ReportDocumentRetrievalLambdaFunction
+          - Arn
+        SPAPIReportDocumentStorageFunctionArn: !GetAtt
+          - ReportDocumentStorageLambdaFunction
+          - Arn
+        SPAPIReportPresignedUrlGeneratorFunctionArn: !GetAtt
+          - ReportPresignedUrlGeneratorLambdaFunction
+          - Arn
+      RoleArn: !GetAtt 
+        - ReportsNotificationsProcessorStateMachineExecutionRole
+        - Arn
+      LoggingConfiguration:
+        Level: ALL
+        IncludeExecutionData: true
+        Destinations:
+          - CloudWatchLogsLogGroup:
+              LogGroupArn: !GetAtt 
+                - ReportsNotificationsProcessorLogGroup
+                - Arn
+  ReportsNotificationsProcessorLogGroup:
+    Type: 'AWS::Logs::LogGroup'
+    Properties:
+      LogGroupName: /aws/states/ReportsNotificationsProcessorLogs
+      RetentionInDays: 365
+  ReportsNotificationsProcessorStateMachineExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: ReportsNotificationsProcessorStateMachineExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: states.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CloudWatchPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogDelivery'
+                  - 'logs:GetLogDelivery'
+                  - 'logs:UpdateLogDelivery'
+                  - 'logs:DeleteLogDelivery'
+                  - 'logs:ListLogDeliveries'
+                  - 'logs:PutResourcePolicy'
+                  - 'logs:DescribeResourcePolicies'
+                  - 'logs:DescribeLogGroups'
+                Resource: '*'
+        - PolicyName: LambdaInvokePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'lambda:InvokeFunction'
+                Resource:
+                  - !GetAtt
+                    - ReportDocumentRetrievalLambdaFunction
+                    - Arn
+                  - !GetAtt
+                    - ReportDocumentStorageLambdaFunction
+                    - Arn
+                  - !GetAtt
+                    - ReportPresignedUrlGeneratorLambdaFunction
+                    - Arn
+        - PolicyName: SNSPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'sns:Publish'
+                Resource: !Ref ReportStorageNotificationSNSTopic
 Parameters:
   ReportsNotificationsProcessorQueueName:
     Type: String
