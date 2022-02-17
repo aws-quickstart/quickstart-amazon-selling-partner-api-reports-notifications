@@ -618,8 +618,13 @@ Resources:
                   - 'logs:ListLogDeliveries'
                   - 'logs:PutResourcePolicy'
                   - 'logs:DescribeResourcePolicies'
-                  - 'logs:DescribeLogGroups'
                 Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'logs:DescribeLogGroups'
+                Resource: !GetAtt 
+                  - ReportsNotificationsProcessorLogGroup
+                  - Arn
         - PolicyName: LambdaInvokePolicy
           PolicyDocument:
             Version: 2012-10-17
