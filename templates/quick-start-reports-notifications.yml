@@ -650,6 +650,346 @@ Resources:
                 Action:
                   - 'sns:Publish'
                 Resource: !Ref ReportStorageNotificationSNSTopic
+  TokenStorageRestApi:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Name: TokenStorageRestApi
+      Description: Token Storage Lambda-backed REST API
+      ApiKeySourceType: HEADER
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  TokenStorageResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      ParentId: !GetAtt 
+        - TokenStorageRestApi
+        - RootResourceId
+      RestApiId: !Ref TokenStorageRestApi
+      PathPart: tokens
+  TokenStoragePostMethod:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      HttpMethod: POST
+      OperationName: PutToken
+      AuthorizationType: AWS_IAM
+      ApiKeyRequired: false
+      ResourceId: !Ref TokenStorageResource
+      RestApiId: !Ref TokenStorageRestApi
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: POST
+        Uri: !Sub
+          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TokenStorageLambdaFunctionArn}/invocations'
+          - TokenStorageLambdaFunctionArn: !GetAtt 
+            - TokenStorageLambdaFunction
+            - Arn
+        Credentials: !GetAtt 
+          - TokenStorageApiGatewayExecutionRole
+          - Arn
+        PassthroughBehavior: NEVER
+        RequestTemplates:
+          application/json: |-
+            {
+             "SellerId": $input.json('$.SellerId'), 
+             "RefreshToken": $input.json('$.RefreshToken') 
+            }
+        IntegrationResponses:
+          - StatusCode: '200'
+        TimeoutInMillis: 29000
+      MethodResponses:
+        - StatusCode: '200'
+          ResponseModels:
+            application/json: !Ref TokenStorageModel
+  TokenStorageDeployment:
+    Type: 'AWS::ApiGateway::Deployment'
+    DependsOn: TokenStoragePostMethod
+    Properties:
+      Description: Token Storage Lambda API deployment
+      RestApiId: !Ref TokenStorageRestApi
+  TokenStorageModel:
+    Type: 'AWS::ApiGateway::Model'
+    Properties:
+      Name: TokenStorageModel
+      ContentType: 'application/json'
+      RestApiId: !Ref TokenStorageRestApi
+      Schema: {}
+  TokenStorageStage:
+    Type: 'AWS::ApiGateway::Stage'
+    Properties:
+      DeploymentId: !Ref TokenStorageDeployment
+      Description: Prod stage
+      RestApiId: !Ref TokenStorageRestApi
+      StageName: 'prod'
+  TokenStorageApiGatewayExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: TokenStorageApiGatewayExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: LambdaInvokePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'lambda:InvokeFunction'
+                Resource:
+                  - !GetAtt 
+                    - TokenStorageLambdaFunction
+                    - Arn  
+  NotificationsSubscriberRestApi:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Name: NotificationsSubscriberRestApi
+      Description: Notifications Subscriber Lambda-backed REST API
+      ApiKeySourceType: HEADER
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  NotificationsSubscriberResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      ParentId: !GetAtt 
+        - NotificationsSubscriberRestApi
+        - RootResourceId
+      RestApiId: !Ref NotificationsSubscriberRestApi
+      PathPart: notifications
+  NotificationsSubscriberPostMethod:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      HttpMethod: POST
+      OperationName: CreateSubscription
+      AuthorizationType: AWS_IAM
+      ApiKeyRequired: false
+      ResourceId: !Ref NotificationsSubscriberResource
+      RestApiId: !Ref NotificationsSubscriberRestApi
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: POST
+        Uri: !Sub
+          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${NotificationsSubscriberLambdaFunctionArn}/invocations'
+          - NotificationsSubscriberLambdaFunctionArn: !GetAtt 
+            - NotificationsSubscriberLambdaFunction
+            - Arn
+        Credentials: !GetAtt 
+          - NotificationsSubscriberApiGatewayExecutionRole
+          - Arn
+        PassthroughBehavior: NEVER
+        RequestTemplates:
+          application/json: |-
+            {
+             "SellerId": $input.json('$.SellerId'), 
+             "RegionCode": $input.json('$.RegionCode'),
+             "NotificationType": $input.json('$.NotificationType')
+            }
+        IntegrationResponses:
+          - StatusCode: '200'
+        TimeoutInMillis: 29000
+      MethodResponses:
+        - StatusCode: '200'
+          ResponseModels:
+            application/json: !Ref NotificationsSubscriberModel
+  NotificationsSubscriberDeployment:
+    Type: 'AWS::ApiGateway::Deployment'
+    DependsOn: NotificationsSubscriberPostMethod
+    Properties:
+      Description: Notifications Subscriber Lambda API deployment
+      RestApiId: !Ref NotificationsSubscriberRestApi
+  NotificationsSubscriberModel:
+    Type: 'AWS::ApiGateway::Model'
+    Properties:
+      Name: NotificationsSubscriberModel
+      ContentType: 'application/json'
+      RestApiId: !Ref NotificationsSubscriberRestApi
+      Schema: {}
+  NotificationsSubscriberStage:
+    Type: 'AWS::ApiGateway::Stage'
+    Properties:
+      DeploymentId: !Ref NotificationsSubscriberDeployment
+      Description: Prod stage
+      RestApiId: !Ref NotificationsSubscriberRestApi
+      StageName: 'prod'
+  NotificationsSubscriberApiGatewayExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: NotificationsSubscriberApiGatewayExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: LambdaInvokePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'lambda:InvokeFunction'
+                Resource:
+                  - !GetAtt 
+                    - NotificationsSubscriberLambdaFunction
+                    - Arn
+  ReportCreatorRestApi:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Name: ReportCreatorRestApi
+      Description: Report Creator Lambda-backed REST API
+      ApiKeySourceType: HEADER
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  ReportCreatorResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      ParentId: !GetAtt 
+        - ReportCreatorRestApi
+        - RootResourceId
+      RestApiId: !Ref ReportCreatorRestApi
+      PathPart: reports
+  ReportCreatorPostMethod:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      HttpMethod: POST
+      OperationName: CreateReport
+      AuthorizationType: AWS_IAM
+      ApiKeyRequired: false
+      ResourceId: !Ref ReportCreatorResource
+      RestApiId: !Ref ReportCreatorRestApi
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: POST
+        Uri: !Sub
+          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ReportCreatorLambdaFunctionArn}/invocations'
+          - ReportCreatorLambdaFunctionArn: !GetAtt 
+            - ReportCreatorLambdaFunction
+            - Arn
+        Credentials: !GetAtt 
+          - ReportCreatorApiGatewayExecutionRole
+          - Arn
+        PassthroughBehavior: NEVER
+        RequestTemplates:
+          application/json: |-
+            {
+             "SellerId": $input.json('$.SellerId'), 
+             "RegionCode": $input.json('$.RegionCode'),
+             "ReportType": $input.json('$.ReportType'),
+             "MarketplaceIds": $input.json('$.MarketplaceIds'),
+             "ReportDataStartTime": $input.json('$.ReportDataStartTime'),
+             "ReportDataEndTime": $input.json('$.ReportDataEndTime'),
+             "ReportOptions": $input.json('$.ReportOptions')
+            }
+        IntegrationResponses:
+          - StatusCode: '200'
+        TimeoutInMillis: 29000
+      MethodResponses:
+        - StatusCode: '200'
+          ResponseModels:
+            application/json: !Ref ReportCreatorModel
+  ReportCreatorDeployment:
+    Type: 'AWS::ApiGateway::Deployment'
+    DependsOn: ReportCreatorPostMethod
+    Properties:
+      Description: Report Creator Lambda API deployment
+      RestApiId: !Ref ReportCreatorRestApi
+  ReportCreatorModel:
+    Type: 'AWS::ApiGateway::Model'
+    Properties:
+      Name: ReportCreatorModel
+      ContentType: 'application/json'
+      RestApiId: !Ref ReportCreatorRestApi
+      Schema: {}
+  ReportCreatorStage:
+    Type: 'AWS::ApiGateway::Stage'
+    Properties:
+      DeploymentId: !Ref ReportCreatorDeployment
+      Description: Prod stage
+      RestApiId: !Ref ReportCreatorRestApi
+      StageName: 'prod'
+  ReportCreatorApiGatewayExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: ReportCreatorApiGatewayExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: LambdaInvokePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'lambda:InvokeFunction'
+                Resource:
+                  - !GetAtt 
+                    - ReportCreatorLambdaFunction
+                    - Arn
+  ApiGatewayInvokeRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: ApiGatewayInvokeRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: APIGatewayInvokePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'execute-api:Invoke'
+                Resource:
+                  - !Sub
+                    - 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApiId}/${StageName}/POST/tokens'
+                    - RestApiId: !Ref TokenStorageRestApi
+                      StageName: !Ref TokenStorageStage
+                  - !Sub
+                    - 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApiId}/${StageName}/POST/notifications'
+                    - RestApiId: !Ref NotificationsSubscriberRestApi
+                      StageName: !Ref NotificationsSubscriberStage
+                  - !Sub
+                    - 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApiId}/${StageName}/POST/reports'
+                    - RestApiId: !Ref ReportCreatorRestApi
+                      StageName: !Ref ReportCreatorStage
+  ApiGatewayInvokeUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+      UserName: ApiGatewayInvokeUser
+      Policies:
+        - PolicyName: AssumeRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'sts:AssumeRole'
+                Resource: !GetAtt
+                  - ApiGatewayInvokeRole
+                  - Arn
 Parameters:
   ReportsNotificationsProcessorQueueName:
     Type: String
