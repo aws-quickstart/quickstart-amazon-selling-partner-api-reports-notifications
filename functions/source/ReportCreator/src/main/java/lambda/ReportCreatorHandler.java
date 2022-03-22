@@ -20,6 +20,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import io.swagger.client.StringUtil;
 import io.swagger.client.api.ReportsApi;
 import io.swagger.client.model.CreateReportSpecification;
 import io.swagger.client.model.ReportOptions;
@@ -105,14 +106,16 @@ public class ReportCreatorHandler implements RequestHandler<Map<String, String>,
 
         if (event.containsKey(REPORT_OPTIONS_KEY_NAME)) {
             String reportOptionsStr = event.get(REPORT_OPTIONS_KEY_NAME);
-            Map<String, String> reportOptionsMap = Splitter.on(",").withKeyValueSeparator("::").split(reportOptionsStr);
+            if (!StringUtil.isEmpty(reportOptionsStr)) {
+                Map<String, String> reportOptionsMap = Splitter.on(",").withKeyValueSeparator("::").split(reportOptionsStr);
 
-            ReportOptions reportOptions = new ReportOptions();
-            for (Map.Entry<String, String> entry: reportOptionsMap.entrySet()) {
-                reportOptions.put(entry.getKey(), entry.getValue());
+                ReportOptions reportOptions = new ReportOptions();
+                for (Map.Entry<String, String> entry: reportOptionsMap.entrySet()) {
+                    reportOptions.put(entry.getKey(), entry.getValue());
+                }
+
+                reportRequest.setReportOptions(reportOptions);
             }
-
-            reportRequest.setReportOptions(reportOptions);
         }
 
         return reportRequest;
