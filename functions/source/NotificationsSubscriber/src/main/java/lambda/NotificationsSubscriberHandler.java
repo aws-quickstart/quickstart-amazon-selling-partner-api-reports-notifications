@@ -19,18 +19,23 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import io.swagger.client.ApiException;
 import io.swagger.client.api.NotificationsApi;
 import io.swagger.client.model.CreateDestinationRequest;
 import io.swagger.client.model.CreateDestinationResponse;
 import io.swagger.client.model.CreateSubscriptionRequest;
 import io.swagger.client.model.CreateSubscriptionResponse;
+import io.swagger.client.model.Destination;
 import io.swagger.client.model.DestinationResourceSpecification;
+import io.swagger.client.model.GetDestinationsResponse;
+import io.swagger.client.model.GetSubscriptionResponse;
 import io.swagger.client.model.SqsResource;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 import utils.AppCredentials;
 import utils.IAMUserCredentials;
+import utils.NotificationsSubscriberResponse;
 import utils.RegionConfig;
 
 import java.nio.ByteBuffer;
@@ -45,7 +50,7 @@ import static utils.Constants.LWA_ENDPOINT;
 import static utils.Constants.VALID_SP_API_REGION_CONFIG;
 import static utils.Constants.VALID_SQS_NOTIFICATION_TYPES;
 
-public class NotificationsSubscriberHandler implements RequestHandler<Map<String, String>, String> {
+public class NotificationsSubscriberHandler implements RequestHandler<Map<String, String>, NotificationsSubscriberResponse> {
 
     //Lambda Environment Variables
     private static final String IAM_USER_CREDENTIALS_SECRET_ARN_ENV_VARIABLE = "IAM_USER_CREDENTIALS_SECRET_ARN";
@@ -65,9 +70,11 @@ public class NotificationsSubscriberHandler implements RequestHandler<Map<String
     private static final String NOTIFICATION_PAYLOAD_VERSION = "1.0";
     private static final String SELLING_PARTNERS_TABLE_HASH_KEY_NAME = "SellerId";
     private static final String SELLING_PARTNERS_TABLE_TOKEN_NAME = "RefreshToken";
+    private static final int DESTINATION_EXISTS_STATUS_CODE = 409;
+    private static final int SUBSCRIPTION_EXISTS_STATUS_CODE = 409;
 
     @Override
-    public String handleRequest(Map<String, String> event, Context context) {
+    public NotificationsSubscriberResponse handleRequest(Map<String, String> event, Context context) {
         LambdaLogger logger = context.getLogger();
         logger.log("NotificationsSubscriber Lambda handler started");
 
@@ -89,11 +96,14 @@ public class NotificationsSubscriberHandler implements RequestHandler<Map<String
 
         try {
             String refreshToken = getRefreshToken(sellerId);
-            logger.log("Refresh Token: " + refreshToken);
 
             String subscriptionId = createSubscription(regionCode, refreshToken, notificationType, destinationId);
             logger.log(String.format("Subscription created - Subscription Id: %s", subscriptionId));
-            return subscriptionId;
+
+            return NotificationsSubscriberResponse.builder()
+                    .destinationId(destinationId)
+                    .subscriptionId(subscriptionId)
+                    .build();
         } catch (Exception e) {
             throw new InternalError("Create subscription failed", e);
         }
@@ -113,9 +123,28 @@ public class NotificationsSubscriberHandler implements RequestHandler<Map<String
         request.setResourceSpecification(resourceSpec);
 
         NotificationsApi notificationsApi = getNotificationsApi(regionCode, null, true);
-        CreateDestinationResponse response = notificationsApi.createDestination(request);
 
-        return response.getPayload().getDestinationId();
+        String destinationId = "";
+        try {
+            CreateDestinationResponse createDestinationResponse = notificationsApi.createDestination(request);
+            destinationId = createDestinationResponse.getPayload().getDestinationId();
+        } catch (ApiException e) {
+            if (e.getCode() == DESTINATION_EXISTS_STATUS_CODE) {
+                GetDestinationsResponse getDestinationsResponse = notificationsApi.getDestinations();
+
+                Destination sqsDestination = getDestinationsResponse.getPayload().stream()
+                        .filter(destination -> destination.getResource().getSqs() != null)
+                        .filter(destination -> sqsQueueArn.equals(destination.getResource().getSqs().getArn()))
+                        .findFirst()
+                        .get();
+
+                destinationId = sqsDestination.getDestinationId();
+            } else {
+                throw e;
+            }
+        }
+
+        return destinationId;
     }
 
     private String createSubscription(String regionCode, String refreshToken, String notificationType, String destinationId)
@@ -126,9 +155,21 @@ public class NotificationsSubscriberHandler implements RequestHandler<Map<String
         request.setPayloadVersion(NOTIFICATION_PAYLOAD_VERSION);
 
         NotificationsApi notificationsApi = getNotificationsApi(regionCode, refreshToken, false);
-        CreateSubscriptionResponse response = notificationsApi.createSubscription(request, notificationType);
 
-        return response.getPayload().getSubscriptionId();
+        String subscriptionId = "";
+        try {
+            CreateSubscriptionResponse response = notificationsApi.createSubscription(request, notificationType);
+            subscriptionId = response.getPayload().getSubscriptionId();
+        } catch (ApiException e) {
+            if (e.getCode() == SUBSCRIPTION_EXISTS_STATUS_CODE) {
+                GetSubscriptionResponse getSubscriptionResponse = notificationsApi.getSubscription(notificationType);
+                subscriptionId = getSubscriptionResponse.getPayload().getSubscriptionId();
+            } else {
+                throw e;
+            }
+        }
+
+        return subscriptionId;
     }
 
     private NotificationsApi getNotificationsApi(String regionCode, String refreshToken, boolean isGrantlessOperation)

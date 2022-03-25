@@ -31,6 +31,7 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 import utils.AppCredentials;
 import utils.IAMUserCredentials;
 import utils.RegionConfig;
+import utils.ReportCreatorResponse;
 import utils.ReportRequest;
 
 import java.nio.ByteBuffer;
@@ -42,7 +43,7 @@ import java.util.Map;
 import static utils.Constants.LWA_ENDPOINT;
 import static utils.Constants.VALID_SP_API_REGION_CONFIG;
 
-public class ReportCreatorHandler implements RequestHandler<Map<String, String>, String> {
+public class ReportCreatorHandler implements RequestHandler<Map<String, String>, ReportCreatorResponse> {
 
     //Lambda Environment Variables
     private static final String IAM_USER_CREDENTIALS_SECRET_ARN_ENV_VARIABLE = "IAM_USER_CREDENTIALS_SECRET_ARN";
@@ -69,7 +70,7 @@ public class ReportCreatorHandler implements RequestHandler<Map<String, String>,
     private static final String REPORTS_TABLE_REGION_CODE_NAME = "RegionCode";
 
     @Override
-    public String handleRequest(Map<String, String> event, Context context) {
+    public ReportCreatorResponse handleRequest(Map<String, String> event, Context context) {
         LambdaLogger logger = context.getLogger();
         logger.log("ReportCreator Lambda handler started");
 
@@ -85,7 +86,10 @@ public class ReportCreatorHandler implements RequestHandler<Map<String, String>,
             logger.log(String.format("Report creation submitted - Report Id: %s", reportId));
 
             storeReportData(reportId, sellerId, regionCode);
-            return reportId;
+
+            return ReportCreatorResponse.builder()
+                    .reportId(reportId)
+                    .build();
         } catch (Exception e) {
             throw new InternalError("Create report failed", e);
         }
