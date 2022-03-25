@@ -52,7 +52,7 @@ public class ReportPresignedUrlGeneratorHandler implements RequestHandler<Map<St
             AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
             URL url = s3.generatePresignedUrl(generatePresignedUrlRequest);
 
-            logger.log("Generated presigned URL: " + url.toString());
+            logger.log("Presigned Url successfully generated");
             return url.toString();
         } catch (Exception e) {
             throw new InternalError("Report document presigned url generation failed", e);

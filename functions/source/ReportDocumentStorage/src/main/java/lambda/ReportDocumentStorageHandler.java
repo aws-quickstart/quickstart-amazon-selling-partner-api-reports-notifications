@@ -37,6 +37,7 @@ public class ReportDocumentStorageHandler implements RequestHandler<Map<String, 
         String destinationS3Bucket = System.getenv(DESTINATION_S3_BUCKET_NAME_ENV_VARIABLE);
 
         String fileKey = String.format("%s/%s", reportType, UUID.randomUUID());
+        logger.log(String.format("File Key: %s", fileKey));
 
         try {
             InputStream inputStream = URI.create(objectPresignedUrl).toURL().openConnection().getInputStream();
