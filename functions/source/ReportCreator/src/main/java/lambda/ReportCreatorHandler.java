@@ -18,9 +18,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import io.swagger.client.StringUtil;
 import io.swagger.client.api.ReportsApi;
 import io.swagger.client.model.CreateReportSpecification;
 import io.swagger.client.model.ReportOptions;
@@ -79,9 +77,9 @@ public class ReportCreatorHandler implements RequestHandler<Map<String, String>,
         String sellerId = event.get(SELLER_ID_KEY_NAME);
         String regionCode = event.get(REGION_CODE_KEY_NAME);
 
-        ReportRequest reportRequest = getReportRequest(event);
-
         try {
+            ReportRequest reportRequest = getReportRequest(event);
+
             String reportId = createReport(regionCode, sellerId, reportRequest);
             logger.log(String.format("Report creation submitted - Report Id: %s", reportId));
 
@@ -95,7 +93,7 @@ public class ReportCreatorHandler implements RequestHandler<Map<String, String>,
         }
     }
 
-    private ReportRequest getReportRequest(Map<String, String> event) {
+    private ReportRequest getReportRequest(Map<String, String> event) throws Exception {
         ReportRequest reportRequest = new ReportRequest();
         reportRequest.setReportType(event.get(REPORT_TYPE_KEY_NAME));
         reportRequest.setMarketplaceIds(Arrays.asList(event.get(MARKETPLACE_IDS_KEY_NAME).split(",")));
@@ -110,11 +108,13 @@ public class ReportCreatorHandler implements RequestHandler<Map<String, String>,
 
         if (event.containsKey(REPORT_OPTIONS_KEY_NAME)) {
             String reportOptionsStr = event.get(REPORT_OPTIONS_KEY_NAME);
-            if (!StringUtil.isEmpty(reportOptionsStr)) {
-                Map<String, String> reportOptionsMap = Splitter.on(",").withKeyValueSeparator("::").split(reportOptionsStr);
+
+            if (!reportOptionsStr.isEmpty()) {
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, String> reportOptionsMap = mapper.readValue(reportOptionsStr, HashMap.class);
 
                 ReportOptions reportOptions = new ReportOptions();
-                for (Map.Entry<String, String> entry: reportOptionsMap.entrySet()) {
+                for (Map.Entry<String, String> entry : reportOptionsMap.entrySet()) {
                     reportOptions.put(entry.getKey(), entry.getValue());
                 }
 
