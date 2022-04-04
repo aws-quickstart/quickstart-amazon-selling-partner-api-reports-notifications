@@ -18,7 +18,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import io.swagger.client.api.ReportsApi;
 import io.swagger.client.model.CreateReportSpecification;
@@ -30,6 +29,7 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 import utils.AppCredentials;
 import utils.IAMUserCredentials;
 import utils.RegionConfig;
+import utils.ReportCreatorResponse;
 import utils.ReportRequest;
 
 import java.nio.ByteBuffer;
@@ -41,7 +41,7 @@ import java.util.Map;
 import static utils.Constants.LWA_ENDPOINT;
 import static utils.Constants.VALID_SP_API_REGION_CONFIG;
 
-public class ReportCreatorHandler implements RequestHandler<Map<String, String>, String> {
+public class ReportCreatorHandler implements RequestHandler<Map<String, String>, ReportCreatorResponse> {
 
     //Lambda Environment Variables
     private static final String IAM_USER_CREDENTIALS_SECRET_ARN_ENV_VARIABLE = "IAM_USER_CREDENTIALS_SECRET_ARN";
@@ -68,7 +68,7 @@ public class ReportCreatorHandler implements RequestHandler<Map<String, String>,
     private static final String REPORTS_TABLE_REGION_CODE_NAME = "RegionCode";
 
     @Override
-    public String handleRequest(Map<String, String> event, Context context) {
+    public ReportCreatorResponse handleRequest(Map<String, String> event, Context context) {
         LambdaLogger logger = context.getLogger();
         logger.log("ReportCreator Lambda handler started");
 
@@ -77,20 +77,23 @@ public class ReportCreatorHandler implements RequestHandler<Map<String, String>,
         String sellerId = event.get(SELLER_ID_KEY_NAME);
         String regionCode = event.get(REGION_CODE_KEY_NAME);
 
-        ReportRequest reportRequest = getReportRequest(event);
-
         try {
+            ReportRequest reportRequest = getReportRequest(event);
+
             String reportId = createReport(regionCode, sellerId, reportRequest);
             logger.log(String.format("Report creation submitted - Report Id: %s", reportId));
 
             storeReportData(reportId, sellerId, regionCode);
-            return reportId;
+
+            return ReportCreatorResponse.builder()
+                    .reportId(reportId)
+                    .build();
         } catch (Exception e) {
             throw new InternalError("Create report failed", e);
         }
     }
 
-    private ReportRequest getReportRequest(Map<String, String> event) {
+    private ReportRequest getReportRequest(Map<String, String> event) throws Exception {
         ReportRequest reportRequest = new ReportRequest();
         reportRequest.setReportType(event.get(REPORT_TYPE_KEY_NAME));
         reportRequest.setMarketplaceIds(Arrays.asList(event.get(MARKETPLACE_IDS_KEY_NAME).split(",")));
@@ -105,14 +108,18 @@ public class ReportCreatorHandler implements RequestHandler<Map<String, String>,
 
         if (event.containsKey(REPORT_OPTIONS_KEY_NAME)) {
             String reportOptionsStr = event.get(REPORT_OPTIONS_KEY_NAME);
-            Map<String, String> reportOptionsMap = Splitter.on(",").withKeyValueSeparator("::").split(reportOptionsStr);
 
-            ReportOptions reportOptions = new ReportOptions();
-            for (Map.Entry<String, String> entry: reportOptionsMap.entrySet()) {
-                reportOptions.put(entry.getKey(), entry.getValue());
+            if (!reportOptionsStr.isEmpty()) {
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, String> reportOptionsMap = mapper.readValue(reportOptionsStr, HashMap.class);
+
+                ReportOptions reportOptions = new ReportOptions();
+                for (Map.Entry<String, String> entry : reportOptionsMap.entrySet()) {
+                    reportOptions.put(entry.getKey(), entry.getValue());
+                }
+
+                reportRequest.setReportOptions(reportOptions);
             }
-
-            reportRequest.setReportOptions(reportOptions);
         }
 
         return reportRequest;

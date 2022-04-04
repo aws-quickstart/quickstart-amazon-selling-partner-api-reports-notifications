@@ -13,6 +13,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.google.common.collect.Lists;
+import utils.TokenStorageResponse;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TokenStorageHandler implements RequestHandler<Map<String, String>, String> {
+public class TokenStorageHandler implements RequestHandler<Map<String, String>, TokenStorageResponse> {
 
     //Lambda Environment Variables
     private static final String ENCRYPTION_KEY_ARN_ENV_VARIABLE = "ENCRYPTION_KEY_ARN";
@@ -34,7 +35,7 @@ public class TokenStorageHandler implements RequestHandler<Map<String, String>, 
     private static final String SELLING_PARTNERS_TABLE_TOKEN_NAME = "RefreshToken";
 
     @Override
-    public String handleRequest(Map<String, String> event, Context context) {
+    public TokenStorageResponse handleRequest(Map<String, String> event, Context context) {
         LambdaLogger logger = context.getLogger();
         logger.log("TokenStorage Lambda handler started");
 
@@ -46,7 +47,10 @@ public class TokenStorageHandler implements RequestHandler<Map<String, String>, 
         storeRefreshToken(sellerId, refreshToken);
         logger.log("TokenStorage Lambda succeeded");
 
-        return "Success";
+        return TokenStorageResponse.builder()
+                .sellerId(sellerId)
+                .status("SUCCESS")
+                .build();
     }
 
     private void validateInput(Map<String, String> event) {

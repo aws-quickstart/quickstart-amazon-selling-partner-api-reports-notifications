@@ -48,7 +48,8 @@
       "Next": "Store Report Document",
       "ResultPath": "$.RetrieveReportDocumentResult",
       "ResultSelector": {
-        "SPAPIReportDocumentUrl.$": "$.Payload"
+        "SPAPIReportDocumentUrl.$": "$.Payload.url",
+        "SPAPIReportDocumentCompressionAlgorithm.$": "$.Payload.compressionAlgorithm"
       }
     },
     "Store Report Document": {
@@ -58,6 +59,7 @@
         "FunctionName": "${SPAPIReportDocumentStorageFunctionArn}",
         "Payload": {
           "PresignedUrl.$": "$.RetrieveReportDocumentResult.SPAPIReportDocumentUrl",
+          "CompressionAlgorithm.$": "$.RetrieveReportDocumentResult.SPAPIReportDocumentCompressionAlgorithm",
           "ReportType.$": "$.ReportType"
         }
       },
@@ -115,7 +117,8 @@
           "ReportType.$": "$.ReportType",
           "ReportId.$": "$.ReportId",
           "ProcessingStatus.$": "$.ProcessingStatus",
-          "ReportUrl.$": "$.GeneratePresignedUrlResult.LocalReportDocumentUrl"
+          "ReportUrl.$": "$.GeneratePresignedUrlResult.LocalReportDocumentUrl",
+          "CompressionAlgorithm.$": "$.RetrieveReportDocumentResult.SPAPIReportDocumentCompressionAlgorithm"
         }
       },
       "End": true

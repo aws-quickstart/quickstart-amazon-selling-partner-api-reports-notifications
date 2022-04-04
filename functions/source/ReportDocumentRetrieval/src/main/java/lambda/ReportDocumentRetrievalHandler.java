@@ -19,12 +19,14 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import io.swagger.client.api.ReportsApi;
+import io.swagger.client.model.ReportDocument;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 import utils.AppCredentials;
 import utils.IAMUserCredentials;
 import utils.RegionConfig;
+import utils.ReportDocumentResponse;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -34,7 +36,7 @@ import java.util.Map;
 import static utils.Constants.LWA_ENDPOINT;
 import static utils.Constants.VALID_SP_API_REGION_CONFIG;
 
-public class ReportDocumentRetrievalHandler implements RequestHandler<Map<String, String>, String> {
+public class ReportDocumentRetrievalHandler implements RequestHandler<Map<String, String>, ReportDocumentResponse> {
 
     //Lambda Environment Variables
     private static final String IAM_USER_CREDENTIALS_SECRET_ARN_ENV_VARIABLE = "IAM_USER_CREDENTIALS_SECRET_ARN";
@@ -57,7 +59,7 @@ public class ReportDocumentRetrievalHandler implements RequestHandler<Map<String
     private static final String REPORTS_TABLE_REGION_CODE_NAME = "RegionCode";
 
     @Override
-    public String handleRequest(Map<String, String> event, Context context) {
+    public ReportDocumentResponse handleRequest(Map<String, String> event, Context context) {
         LambdaLogger logger = context.getLogger();
         logger.log("ReportCreator Lambda handler started");
 
@@ -70,17 +72,22 @@ public class ReportDocumentRetrievalHandler implements RequestHandler<Map<String
         String regionCode = getReportRegionCode(reportId, sellerId);
 
         try {
-            String reportDocumentUrl = getReportDocument(regionCode, sellerId, reportDocumentId);
+            ReportDocument reportDocument = getReportDocument(regionCode, sellerId, reportDocumentId);
             logger.log("Report document retrieved");
-            return reportDocumentUrl;
+
+            return ReportDocumentResponse.builder()
+                    .url(reportDocument.getUrl())
+                    .compressionAlgorithm(reportDocument.getCompressionAlgorithm() != null ?
+                            reportDocument.getCompressionAlgorithm().getValue() : "")
+                    .build();
         } catch (Exception e) {
             throw new InternalError("Report document retrieval failed", e);
         }
     }
 
-    private String getReportDocument(String regionCode, String sellerId, String reportDocumentId) throws Exception {
+    private ReportDocument getReportDocument(String regionCode, String sellerId, String reportDocumentId) throws Exception {
         ReportsApi reportsApi = getReportsApi(regionCode, sellerId);
-        return reportsApi.getReportDocument(reportDocumentId).getUrl();
+        return reportsApi.getReportDocument(reportDocumentId);
     }
 
     private ReportsApi getReportsApi(String regionCode, String sellerId) throws Exception {
