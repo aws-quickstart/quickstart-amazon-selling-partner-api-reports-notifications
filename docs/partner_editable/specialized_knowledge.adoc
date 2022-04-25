@@ -1,0 +1,1 @@
+This Quick Start also assumes familiarity with the Selling Partner API. To read more about it, visit https://developer-docs.amazon.com/sp-api/[SP-API documentation site^].

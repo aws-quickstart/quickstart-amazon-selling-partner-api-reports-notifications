@@ -1,0 +1,25 @@
+=== Confirm your AWS account configuration
+
+. Sign in to your AWS account at https://aws.amazon.com with an IAM user role that has the necessary permissions. For details, see link:#_planning_the_deployment[Planning the deployment] earlier in this guide.
+. Ensure that your AWS account is configured correctly, as discussed in the link:#_technical_requirements[Technical requirements] section.
+
+=== Launch the Quick Start
+
+The deployment takes about {deployment_time} to complete.
+
+. Sign in to your AWS account, and choose the following option to launch the AWS CloudFormation template.
++
+[cols="3,1"]
+|===
+^|http://qs_launch_permalink[Deploy {partner-product-short-name} into an existing VPC on AWS^]
+^|http://qs_template_permalink[View template^]
+|===
++
+. Check the AWS Region that's displayed in the upper-right corner of the navigation bar, and change it if necessary. This Region is where you build the infrastructure. The template is launched in the {default_deployment_region} Region by default. For more information, see link:#_supported_aws_regions[Supported AWS Regions] earlier in this guide.
+. On the *Create stack* page, keep the default setting for the template URL, and then choose *Next*.
+. On the *Specify stack details* page, change the stack name if needed. Review the parameters for the template. Provide values for the parameters that require input. For all other parameters, review the default settings and customize them as necessary. When you finish reviewing and customizing the parameters, choose *Next*.
+. On the *Configure stack options* page, you can https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html[specify tags^] (key-value pairs) for resources in your stack and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html[set advanced options^]. When you finish, choose *Next*.
+. On the *Review* page, review and confirm the template settings. Under *Capabilities*, select the check box to acknowledge that the template creates IAM resources.
+. Choose *Create stack* to deploy the stack.
+. Monitor the status of the stack. When the status is *CREATE_COMPLETE*, the SP-API deployment is ready.
+. To view the created resources, see the values displayed in the *Outputs* tab for the stack.
