@@ -26,12 +26,12 @@ For more information, see https://docs.aws.amazon.com/AWSCloudFormation/latest/U
 '''
 *Q.* Which value should I use for *Role Arn* parameter during the installation?
 
-*A.* You have to specify the AWS IAM role ARN that is currently registered in your app. You can view this information by going to the **Edit App** page.
+*A.* You have to specify the AWS IAM role ARN that is currently registered in your app. You can view this information by logging to https://sellercentral.amazon.com/[Seller Central^] and navigating to *Partner Network / Develop Apps*, and clicking on **Edit App**.
 
 '''
 *Q.* My application is currently registered with an AWS IAM user ARN instead of a role ARN, can I still use this Quick Start?
 
-*A.* No. In order to use this Quick Start you have to update your application to use an AWS IAM role ARN instead. This is a best practice that increases the security of your application. You can update this information by going to the **Edit App** page.
+*A.* No. In order to use this Quick Start you have to update your application to use an AWS IAM role ARN instead. This is a best practice that increases the security of your application. You can update this information by logging to https://sellercentral.amazon.com/[Seller Central^] and navigating to *Partner Network / Develop Apps*, and clicking on **Edit App**.
 
 '''
 *Q.* Will I automatically start receiving notifications for report processing completion after installing this Quick Start?

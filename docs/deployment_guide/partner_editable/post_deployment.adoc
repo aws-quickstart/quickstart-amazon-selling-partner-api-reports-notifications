@@ -18,6 +18,7 @@ For more information about Selling Partner API best practices, see the https://d
 
 == Security
 This Quick Starts implements the following security best practices:
+
 . Application credentials secure storage using AWS Secrets Manager secrets.
 . Client token encryption using AWS KMS keys. By using the provided Amazon API Gateway *TokenStorageRestApi* and/or AWS Lambda *SPAPITokenStorage* function you are following credential encryption best practices.
 . API authentication with temporary credentials.
@@ -116,4 +117,4 @@ In order to integrate this Quick Start into your product or application, execute
 
 == Next steps
 
-This Quick Start enables the *REPORT_PROCESSING_FINISHED* notification processing in an AWS Step Functions state machine. This state machine executes four steps: retrieves the report document, stores it, generates a presigned url for it and send an email notification. This workflow covers a basic functionality and is intended to be used as a skeleton for a customized solution adapted to your product's need. In order to do this, extend the provided workflow by adding or removing https://docs.aws.amazon.com/step-functions/latest/dg/concepts-states.html[states^] to it.
+This Quick Start enables the *REPORT_PROCESSING_FINISHED* notification processing in an AWS Step Functions state machine. This state machine executes four steps: retrieves the report document, stores it, generates a presigned url for it and sends an email notification. This workflow covers a basic functionality and is intended to be used as a skeleton for a customized solution adapted to your product's need. In order to do this, extend the provided workflow by adding or removing https://docs.aws.amazon.com/step-functions/latest/dg/concepts-states.html[states^] to it.
