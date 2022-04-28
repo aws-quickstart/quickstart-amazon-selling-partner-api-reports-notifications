@@ -1,7 +1,7 @@
 :quickstart-project-name: quickstart-amazon-selling-partner-api-reports-notifications
 :partner-product-name: Selling Partner Reports API
 :partner-product-short-name: Selling Partner Reports API
-:partner-company-name: Selling Partner Developer Services
+:partner-company-name: Amazon Selling Partner Developer Services
 :doc-month: June
 :doc-year: 2022
 :partner-contributors: Federico Rodriguez, {partner-company-name}

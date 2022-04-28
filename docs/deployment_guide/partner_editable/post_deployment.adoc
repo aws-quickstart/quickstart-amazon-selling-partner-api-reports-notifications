@@ -18,6 +18,7 @@ For more information about Selling Partner API best practices, see the https://d
 
 == Security
 This Quick Starts implements the following security best practices:
+
 . Application credentials secure storage using AWS Secrets Manager secrets.
 . Client token encryption using AWS KMS keys. By using the provided Amazon API Gateway *TokenStorageRestApi* and/or AWS Lambda *SPAPITokenStorage* function you are following credential encryption best practices.
 . API authentication with temporary credentials.
@@ -30,10 +31,11 @@ This Quick Starts implements the following security best practices:
 In order to create and process SP-API reports using a pre-built Postman collection, execute the following steps.
 
 ==== Set up the Postman collection
-. Open Postman application and https://learning.postman.com/docs/getting-started/importing-and-exporting-data/[import a new resource^] using the following link: <TBC>
+. Open the Selling Partner Reports API Quick Start https://documenter.getpostman.com/view/15862940/UyrEhadx[Postman collection documentation page^].
+. Click *Run in Postman* to import the collection to Postman client application.
 . In the imported Postman collection, go to *Variables*.
 . In *iamUserAccessKey* variable, under *CURRENT VALUE* paste the *Access key ID* obtained while executing the *Post-deployment steps*.
-. In *iamUserSecretKey* variable, under *CURRENT VALUE* paste the *Secret Access Key* obtained while executing the *Post-deployment steps*.
+. In *iamUserSecretKey* variable, under *CURRENT VALUE* paste the *Secret access key* obtained while executing the *Post-deployment steps*.
 . In *iamRoleArn* variable, under *CURRENT VALUE* paste the *ARN* obtained in the previous step.
 . Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
 . In the input search box, type *TokenStorageRestApi*.
@@ -116,4 +118,4 @@ In order to integrate this Quick Start into your product or application, execute
 
 == Next steps
 
-This Quick Start enables the *REPORT_PROCESSING_FINISHED* notification processing in an AWS Step Functions state machine. This state machine executes four steps: retrieves the report document, stores it, generates a presigned url for it and send an email notification. This workflow covers a basic functionality and is intended to be used as a skeleton for a customized solution adapted to your product's need. In order to do this, extend the provided workflow by adding or removing https://docs.aws.amazon.com/step-functions/latest/dg/concepts-states.html[states^] to it.
+This Quick Start enables the *REPORT_PROCESSING_FINISHED* notification processing in an AWS Step Functions state machine. This state machine executes four steps: retrieves the report document, stores it, generates a presigned url for it and sends an email notification. This workflow covers a basic functionality and is intended to be used as a skeleton for a customized solution adapted to your product's need. In order to do this, extend the provided workflow by adding or removing https://docs.aws.amazon.com/step-functions/latest/dg/concepts-states.html[states^] to it.
