@@ -1,10 +1,9 @@
 === Launch the Quick Start
 
 Sign in to your AWS account with a user that has the necessary permissions, and choose the following option to launch the AWS CloudFormation template.
-+
+
 [cols="3,1"]
 |===
 ^|http://qs_launch_permalink[Deploy {partner-product-short-name} into an existing VPC on AWS^]
 ^|http://qs_template_permalink[View template^]
 |===
-+

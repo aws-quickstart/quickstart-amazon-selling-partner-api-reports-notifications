@@ -6,25 +6,25 @@ image::../images/architecture_diagram.png[Architecture]
 
 As shown in <<architecture1>>, the Quick Start sets up a serverless, event-driven architecture that includes:
 
-. Three AWS Lambda-backed Amazon API Gateway endpoints
+. Three AWS Lambda-backed Amazon API Gateway endpoints:
 .. *TokenStorageRestApi:* encrypts and stores a selling partner's SP-API refresh token.
 .. *NotificationsSubscriberRestApi:* subscribes the selling partner to the specified https://developer-docs.amazon.com/sp-api/docs/notifications-api-v1-use-case-guide#notificationtype[SP-API notification type^].
 .. *ReportCreatorRestApi:* submits a report creation request to SP-API.
-. An AWS IAM role, *ApiGatewayInvokeRole*, to authenticate Amazon API Gateway requests
+. An AWS IAM role, *ApiGatewayInvokeRole*, to authenticate Amazon API Gateway requests.
 . An AWS IAM user, *ApiGatewayInvokeUser*, to assume *ApiGatewayInvokeRole* role.
-. Two Amazon DynamoDB tables
-.. *SellingPartners:* to store client tokens
-.. *SPAPIReports:* to store reports information
-. An AWS KMS key, to encrypt and decrypt client tokens
-. Two AWS Secrets Manager secrets
-.. *SPAPIUserCredentials:* to store SP-API AWS IAM user credentials
-.. *SPAPIAppCredentials:* to store SP-API application credentials
-. An Amazon SQS queue, to receive SP-API notifications
-. An AWS Lambda function, *SPAPIReportsNotificationsProcessor*, that listens to incoming messages
-. An Amazon S3 bucket, *sp-api-reports-bucket-{region}-{account-id}*, for local report storage
+. Two Amazon DynamoDB tables:
+.. *SellingPartners:* to store client tokens.
+.. *SPAPIReports:* to store reports information.
+. An AWS KMS key, to encrypt and decrypt client tokens.
+. Two AWS Secrets Manager secrets:
+.. *SPAPIUserCredentials:* to store SP-API AWS IAM user credentials.
+.. *SPAPIAppCredentials:* to store SP-API application credentials.
+. An Amazon SQS queue, to receive SP-API notifications.
+. An AWS Lambda function, *SPAPIReportsNotificationsProcessor*, that listens to incoming messages.
+. An Amazon S3 bucket, *sp-api-reports-bucket-{region}-{account-id}*, for local report storage.
 . An AWS Step Functions state machine, *ReportsNotificationsProcessor*, triggered when an SP-API reports notification is received, consisting of:
-.. Three AWS Lambda function steps
-... *SPAPIReportDocumentRetrieval:* to retrieve report documents information from SP-API
-... *SPAPIReportDocumentStorage:* to store report documents in the account-owned Amazon S3 bucket
-... *SPAPIReportPresignedUrlGenerator:* to generate presigned urls for the stored report documents
-.. An Amazon SNS topic, *SPAPIReportStorageNotificationTopic*, to notify report processing completion
+.. Three AWS Lambda function steps:
+... *SPAPIReportDocumentRetrieval:* to retrieve report documents information from SP-API.
+... *SPAPIReportDocumentStorage:* to store report documents in the account-owned Amazon S3 bucket.
+... *SPAPIReportPresignedUrlGenerator:* to generate presigned urls for the stored report documents.
+.. An Amazon SNS topic, *SPAPIReportStorageNotificationTopic*, to notify report processing completion.
