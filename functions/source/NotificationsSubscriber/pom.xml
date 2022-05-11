@@ -222,12 +222,6 @@
             <groupId>com.amazon.sellingpartnerapi</groupId>
             <artifactId>sellingpartnerapi-aa-java</artifactId>
             <version>1.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>aws-json-protocol</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
