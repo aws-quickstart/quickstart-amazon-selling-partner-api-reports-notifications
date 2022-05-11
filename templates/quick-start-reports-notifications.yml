@@ -1,5 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This template creates the required resources for Reports & Notifications APIs Quick Start (qs-1shjfmgf2)
+Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
