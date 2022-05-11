@@ -14,6 +14,29 @@ Metadata:
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
 Parameters:
+  ReportsNotificationsProcessorQueueName:
+    Type: String
+    AllowedPattern: '^[0-9a-zA-Z-]+$'
+    Default: sp-api-reports-notifications-queue
+    Description: Name of the SQS queue that will receive reports notifications from SP-API
+  AccessKey:
+    Type: String
+    Description: Access Key of the IAM User
+  SecretKey:
+    Type: String
+    Description: Secret Key of he IAM User
+  RoleArn:
+    Type: String
+    Description: Arn of the IAM Role registered in the SP-API app
+  ClientId:
+    Type: String
+    Description: Client Id of the SP-API app
+  ClientSecret:
+    Type: String
+    Description: Client Secret of the SP-API app
+  ReportStorageNotificationEmail:
+    Type: String
+    Description: Email address to which report generation updates are sent
   QSS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
     ConstraintDescription: Quick Start bucket name can include numbers, lowercase
@@ -1046,27 +1069,4 @@ Resources:
                 Resource: !GetAtt
                   - ApiGatewayInvokeRole
                   - Arn
-Parameters:
-  ReportsNotificationsProcessorQueueName:
-    Type: String
-    AllowedPattern: '^[0-9a-zA-Z-]+$'
-    Default: sp-api-reports-notifications-queue
-    Description: Name of the SQS queue that will receive reports notifications from SP-API
-  AccessKey:
-    Type: String
-    Description: Access Key of the IAM User
-  SecretKey:
-    Type: String
-    Description: Secret Key of he IAM User
-  RoleArn:
-    Type: String
-    Description: Arn of the IAM Role registered in the SP-API app
-  ClientId:
-    Type: String
-    Description: Client Id of the SP-API app
-  ClientSecret:
-    Type: String
-    Description: Client Secret of the SP-API app
-  ReportStorageNotificationEmail:
-    Type: String
-    Description: Email address to which report generation updates are sent
+
