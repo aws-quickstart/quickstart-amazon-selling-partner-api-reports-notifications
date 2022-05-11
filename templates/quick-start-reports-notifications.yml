@@ -1,44 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This template creates the required resources for Reports & Notifications APIs Quick Start (qs-1shjfmgf2)
-Metadata:
-  QuickStartDocumentation:
-    EntrypointName: 'Launch the Quick Start'
-  AWS::CloudFormation::Interface:
-    ParameterGroups:
-      -
-        Label:
-          default: 'Selling Partner API application details'
-        Parameters:
-          - ClientId
-          - ClientSecret
-      -
-        Label:
-          default: 'IAM Resources details'
-        Parameters:
-          - RoleArn
-          - AccessKey
-          - SecretKey
-      -
-        Label:
-          default: 'Quick Start AWS resources details'
-        Parameters:
-          - ReportsNotificationsProcessorQueueName
-          - ReportStorageNotificationEmail
-    ParameterLabels:
-      ClientId:
-        default: 'SP-API Client Id'
-      ClientSecret:
-        default: 'SP-API Client Secret'
-      RoleArn:
-        default: 'IAM Role Arn'
-      AccessKey:
-        default: 'IAM User Access Key'
-      SecretKey:
-        default: 'IAM User Secret Key'
-      ReportsNotificationsProcessorQueueName:
-        default: 'Report Notifications SQS Queue Name'
-      ReportStorageNotificationEmail:
-        default: 'Report Processor Notification Email'
 Resources:
   NotificationsSubscriberLambdaFunction:
     Type: 'AWS::Lambda::Function'

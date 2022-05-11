@@ -1,119 +1,23 @@
+// Add steps as necessary for accessing the software, post-configuration, and testing. Don’t include full usage instructions for your software, but add links to your product documentation for that information.
+//Should any sections not be applicable, remove them
+
+== Test the deployment
+// If steps are required to test the deployment, add them here. If not, remove the heading
+
 == Post-deployment steps
-
-This Quick Start enables three Amazon API Gateway endpoints. To successfully invoke them, temporary credentials from an AWS IAM role, also created as part of the deployment, have to be used. For this purpose, an AWS IAM user with permissions to assume the corresponding role is created. The following steps describe how to retrieve credentials for this user.
-
-. Open the https://console.aws.amazon.com/iam/[AWS IAM console^].
-. In the navigation pane, choose *Users*.
-. Select the user with *User name = ApiGatewayInvokeUser*.
-. Go to *Security credentials* tab.
-. Under *Access keys* select *Create Access key*.
-. Copy the generated *Access key ID* and *Secret access key*, or click on *Download .csv file* alternatively.
-. Open the https://console.aws.amazon.com/iam/[AWS IAM console^].
-. In the navigation pane, choose *Roles*.
-. Select the role with *Role name = ApiGatewayInvokeRole*.
-. Copy the role *ARN*.
+// If post-deployment steps are required, add them here. If not, remove the heading
 
 == Best practices for using {partner-product-short-name} on AWS
-For more information about Selling Partner API best practices, see the https://developer-docs.amazon.com/sp-api/docs/what-is-the-selling-partner-api[SP-API Developer Guide^].
+// Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
+
+_Add any best practices for using the software._
 
 == Security
-This Quick Starts implements the following security best practices:
-. Application credentials secure storage using AWS Secrets Manager secrets.
-. Client token encryption using AWS KMS keys. By using the provided Amazon API Gateway *TokenStorageRestApi* and/or AWS Lambda *SPAPITokenStorage* function you are following credential encryption best practices.
-. API authentication with temporary credentials.
-. Least privilege AWS IAM policies.
+// Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
 
-== How to use
+_Add any security-related information._
 
-=== Test using a pre-built Postman collection
+== Other useful information
+//Provide any other information of interest to users, especially focusing on areas where AWS or cloud usage differs from on-premises usage.
 
-In order to create and process SP-API reports using a pre-built Postman collection, execute the following steps.
-
-==== Set up the Postman collection
-. Open Postman application and https://learning.postman.com/docs/getting-started/importing-and-exporting-data/[import a new resource^] using the following link: <TBC>
-. In the imported Postman collection, go to *Variables*.
-. In *iamUserAccessKey* variable, under *CURRENT VALUE* paste the *Access key ID* obtained while executing the *Post-deployment steps*.
-. In *iamUserSecretKey* variable, under *CURRENT VALUE* paste the *Secret Access Key* obtained while executing the *Post-deployment steps*.
-. In *iamRoleArn* variable, under *CURRENT VALUE* paste the *ARN* obtained in the previous step.
-. Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
-. In the input search box, type *TokenStorageRestApi*.
-. Copy the value under *ID* column.
-. In the imported Postman collection, go to *Variables*.
-. In *tokenStorageApiId* variable, under *CURRENT VALUE* paste the *TokenStorageRestApi ID* obtained in the previous step.
-. Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
-. In the input search box, type *NotificationsSubscriberRestApi*.
-. Copy the value under *ID* column.
-. In the imported Postman collection, go to *Variables*.
-. In *notificationsSubscriberApiId* variable, under *CURRENT VALUE* paste the *NotificationsSubscriberRestApi ID* obtained in the previous step.
-. Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
-. In the input search box, type *ReportCreatorRestApi*.
-. Copy the value under *ID* column.
-. In the imported Postman collection, go to *Variables*.
-. In *reportCreatorApiId* variable, under *CURRENT VALUE* paste the *ReportCreatorRestApi ID* obtained in the previous step.
-
-==== Invoke the API endpoints
-. In the imported Postman collection, select and execute *STS Assume API Gateway Role* request. This request will retrieve temporary credentials from *ApiGatewayInvokeRole* role and automatically store them in collection variables.
-. In the imported Postman collection, select *Token Storage* request.
-. Select *Body* tab, and replace *SellerId* and *RefreshToken* with seller id and refresh token from the selling partner.
-. Submit the request. This request will encrypt and store in the AWS cloud the selling partner's credentials, to be used in subsequent SP-API calls.
-. In the imported Postman collection, select *Notifications Subscriber* request.
-. Select *Body* tab, and replace *SellerId* with the value used in the previous step. Replace *RegionCode* with the region of the selling partner. Valid values are "NA", "EU" and "FE".
-. Submit the request. This request will subscribe your application to *REPORT_PROCESSING_FINISHED* notification for the selling partner specified.
-. In the imported Postman collection, select *Report Creator* request.
-. Select *Body* tab, and replace *SellerId* and *RegionCode* with the values used in the previous steps. Update the remaining body parameters with valid values of the report you want to create.
-. Submit the request. This request will create a report in SP-API; once the report is created, the system will process the incoming notification, store the report locally and notify using the provided email address.
-
-=== Integrate into your product or application
-
-In order to integrate this Quick Start into your product or application, execute the following steps.
-
-==== Get Amazon API Gateway endpoints urls
-. Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
-. Select the API with *Name = TokenStorageRestApi*.
-. Go to *Stages* section.
-. Expand *prod* stage and click on *POST* under */tokens*.
-. Copy the value next to *Invoke URL*.
-. Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
-. Select the API with *Name = NotificationsSubscriberRestApi*.
-. Go to *Stages* section.
-. Expand *prod* stage and click on *POST* under */notifications*.
-. Copy the value next to *Invoke URL*.
-. Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
-. Select the API with *Name = ReportCreatorRestApi*.
-. Go to *Stages* section.
-. Expand *prod* stage and click on *POST* under */reports*.
-. Copy the value next to *Invoke URL*.
-
-==== Invoke the API endpoints
-. From your product or application, execute https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html[STS Assume Role API^] using the AWS IAM user's *Access Key* and *Secret Access Key*, and the AWS IAM role ARN obtained while executing the *Post-deployment steps*. This request will retrieve temporary credentials from *ApiGatewayInvokeRole* role to use in the subsequent API calls.
-. From your product or application, execute a POST request to *TokenStorageRestApi* using the *Invoke URL* obtained in the previous step. Sign the request using temporary credentials obtained from STS Assume Role. This request will encrypt and store in the AWS cloud the selling partner's credentials, to be used in subsequent SP-API calls. Below you can find a sample request body.
-----
-{
-  "SellerId": "ABC...",
-  "RefreshToken": "Atzr|..."
-}
-----
-. From your product or application, execute a POST request to *NotificationsSubscriberRestApi* using the *Invoke URL* obtained in the previous step. Sign the request using temporary credentials obtained from STS Assume Role. This request will subscribe your application to *REPORT_PROCESSING_FINISHED* notification for the selling partner specified. Below you can find a sample request body.
-----
-{
-  "SellerId": "ABC...",
-  "RegionCode": "NA|EU|FE",
-  "NotificationType": "REPORT_PROCESSING_FINISHED"
-}
-----
-. From your product or application, execute a POST request to *ReportCreatorRestApi* using the *Invoke URL* obtained in the previous step. Sign the request using temporary credentials obtained from STS Assume Role. This request will create a report in SP-API; once the report is created, the system will process the incoming notification, store the report locally and notify using the provided email address. Below you can find a sample request body.
-----
-{
-  "SellerId": "ABC...",
-  "RegionCode": "NA|EU|FE",
-  "ReportType": "GET_XML_BROWSE_TREE_DATA",
-  "MarketplaceIds": "A1F83G8C2ARO7P",
-  "ReportDataStartTime": "2022-03-01T09:00:00.000Z",
-  "ReportDataEndTime": "2022-03-01T12:00:00.000Z",
-  "ReportOptions": "{\"BrowseNodeId\": \"26978488031\"}"
-}
-----
-
-== Next steps
-
-This Quick Start enables the *REPORT_PROCESSING_FINISHED* notification processing in an AWS Step Functions state machine. This state machine executes four steps: retrieves the report document, stores it, generates a presigned url for it and send an email notification. This workflow covers a basic functionality and is intended to be used as a skeleton for a customized solution adapted to your product's need. In order to do this, extend the provided workflow by adding or removing https://docs.aws.amazon.com/step-functions/latest/dg/concepts-states.html[states^] to it.
+_Add any other details that will help the customer use the software on AWS._
