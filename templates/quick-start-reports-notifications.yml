@@ -1,5 +1,63 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This template creates the required resources for Reports & Notifications APIs Quick Start (qs-1shjfmgf2)
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: AWS Quick Start configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+    ParameterLabels:
+      QSS3BucketName:
+        default: Quick Start S3 bucket name
+      QSS3KeyPrefix:
+        default: Quick Start S3 key prefix
+Parameters:
+  ReportsNotificationsProcessorQueueName:
+    Type: String
+    AllowedPattern: '^[0-9a-zA-Z-]+$'
+    Default: sp-api-reports-notifications-queue
+    Description: Name of the SQS queue that will receive reports notifications from SP-API
+  AccessKey:
+    Type: String
+    Description: Access Key of the IAM User
+  SecretKey:
+    Type: String
+    Description: Secret Key of he IAM User
+  RoleArn:
+    Type: String
+    Description: Arn of the IAM Role registered in the SP-API app
+  ClientId:
+    Type: String
+    Description: Client Id of the SP-API app
+  ClientSecret:
+    Type: String
+    Description: Client Secret of the SP-API app
+  ReportStorageNotificationEmail:
+    Type: String
+    Description: Email address to which report generation updates are sent
+  QSS3BucketName:
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
+    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
+      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
+      (-).
+    Default: aws-quickstart
+    Description: S3 bucket name for the Quick Start assets. This string can include
+      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
+      or end with a hyphen (-).
+    Type: String
+  QSS3KeyPrefix:
+    AllowedPattern: ^[0-9a-zA-Z-/]*$
+    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), and forward slash (/).
+    Default: quickstart-amazon-selling-partner-api-reports-notifications/
+    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
+      can include numbers, lowercase letters, uppercase letters, hyphens (-), and
+      forward slash (/).
+    Type: String
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 Resources:
   NotificationsSubscriberLambdaFunction:
     Type: 'AWS::Lambda::Function'
@@ -7,8 +65,11 @@ Resources:
       FunctionName: SPAPINotificationsSubscriber
       Description: Lambda function that subscribes the seller to SP-API notifications
       Code:
-        S3Bucket: sp-api-quick-start-notifications
-        S3Key: notifications-subscriber-1.0.jar
+        S3Bucket: !If
+          - UsingDefaultBucket
+          - !Sub '${QSS3BucketName}-${AWS::Region}'
+          - !Ref QSS3BucketName
+        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/NotificationSubscriber/notifications-subscriber-1.0.jar"
       Handler: lambda.NotificationsSubscriberHandler
       Role: !GetAtt 
         - NotificationsSubscriberLambdaExecutionRole
@@ -100,8 +161,11 @@ Resources:
         Lambda function that processes incoming reports notifications from
         SP-API
       Code:
-        S3Bucket: sp-api-quick-start-notifications
-        S3Key: report-notification-processor-1.0.jar
+        S3Bucket: !If
+          - UsingDefaultBucket
+          - !Sub '${QSS3BucketName}-${AWS::Region}'
+          - !Ref QSS3BucketName
+        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/ReportsNotificationsProcessor/report-notification-processor-1.0.jar"
       Handler: lambda.ReportNotificationProcessorHandler
       Role: !GetAtt 
         - ReportsNotificationsProcessorLambdaExecutionRole
@@ -196,8 +260,11 @@ Resources:
         Lambda function that copies the generated report into the selling
         partner's account
       Code:
-        S3Bucket: sp-api-quick-start-notifications
-        S3Key: report-document-storage-1.0.jar
+        S3Bucket: !If
+          - UsingDefaultBucket
+          - !Sub '${QSS3BucketName}-${AWS::Region}'
+          - !Ref QSS3BucketName
+        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/ReportDocumentStorage/report-document-storage-1.0.jar"
       Handler: lambda.ReportDocumentStorageHandler
       Role: !GetAtt 
         - ReportDocumentStorageLambdaExecutionRole
@@ -241,8 +308,11 @@ Resources:
       FunctionName: SPAPIReportCreator
       Description: Lambda function that submit a report creation request to SP-API
       Code:
-        S3Bucket: sp-api-quick-start-notifications
-        S3Key: report-creator-1.0.jar
+        S3Bucket: !If
+          - UsingDefaultBucket
+          - !Sub '${QSS3BucketName}-${AWS::Region}'
+          - !Ref QSS3BucketName
+        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/ReportCreator/report-creator-1.0.jar"
       Handler: lambda.ReportCreatorHandler
       Role: !GetAtt 
         - ReportCreatorLambdaExecutionRole
@@ -309,8 +379,11 @@ Resources:
       FunctionName: SPAPIReportDocumentRetrieval
       Description: Lambda function that retrieves a report document from SP-API
       Code:
-        S3Bucket: sp-api-quick-start-notifications
-        S3Key: report-document-retrieval-1.0.jar
+        S3Bucket: !If
+          - UsingDefaultBucket
+          - !Sub '${QSS3BucketName}-${AWS::Region}'
+          - !Ref QSS3BucketName
+        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/ReportDocumentRetrieval/report-document-retrieval-1.0.jar"
       Handler: lambda.ReportDocumentRetrievalHandler
       Role: !GetAtt 
         - ReportDocumentRetrievalLambdaExecutionRole
@@ -372,8 +445,11 @@ Resources:
       FunctionName: SPAPITokenStorage
       Description: Lambda function that stores the selling partner's token into DynamoDB
       Code:
-        S3Bucket: sp-api-quick-start-notifications
-        S3Key: token-storage-1.0.jar
+        S3Bucket: !If
+          - UsingDefaultBucket
+          - !Sub '${QSS3BucketName}-${AWS::Region}'
+          - !Ref QSS3BucketName
+        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/TokenStorage/token-storage-1.0.jar"
       Handler: lambda.TokenStorageHandler
       Role: !GetAtt 
         - TokenStorageLambdaExecutionRole
@@ -420,8 +496,11 @@ Resources:
       FunctionName: SPAPIReportPresignedUrlGenerator
       Description: Lambda function that generates a presigned url for a report document
       Code:
-        S3Bucket: sp-api-quick-start-notifications
-        S3Key: report-presigned-url-generator-1.0.jar
+        S3Bucket: !If
+          - UsingDefaultBucket
+          - !Sub '${QSS3BucketName}-${AWS::Region}'
+          - !Ref QSS3BucketName
+        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/ReportPresignedUrl/report-presigned-url-generator-1.0.jar"
       Handler: lambda.ReportPresignedUrlGeneratorHandler
       Role: !GetAtt 
         - ReportPresignedUrlGeneratorLambdaExecutionRole
@@ -990,27 +1069,4 @@ Resources:
                 Resource: !GetAtt
                   - ApiGatewayInvokeRole
                   - Arn
-Parameters:
-  ReportsNotificationsProcessorQueueName:
-    Type: String
-    AllowedPattern: '^[0-9a-zA-Z-]+$'
-    Default: sp-api-reports-notifications-queue
-    Description: Name of the SQS queue that will receive reports notifications from SP-API
-  AccessKey:
-    Type: String
-    Description: Access Key of the IAM User
-  SecretKey:
-    Type: String
-    Description: Secret Key of he IAM User
-  RoleArn:
-    Type: String
-    Description: Arn of the IAM Role registered in the SP-API app
-  ClientId:
-    Type: String
-    Description: Client Id of the SP-API app
-  ClientSecret:
-    Type: String
-    Description: Client Secret of the SP-API app
-  ReportStorageNotificationEmail:
-    Type: String
-    Description: Email address to which report generation updates are sent
+
