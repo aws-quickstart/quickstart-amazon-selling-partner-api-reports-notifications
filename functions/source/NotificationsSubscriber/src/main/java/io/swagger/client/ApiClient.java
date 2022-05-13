@@ -515,6 +515,8 @@ public class ApiClient {
     /**
      * Sets the RateLimiter
      * A rate limiter is used to manage a high volume of traffic allowing N requests per second
+     *
+     * @param rateLimitConfiguration RateLimitConfiguration instance
      * @return Api client
      */
      public ApiClient setRateLimiter(RateLimitConfiguration rateLimitConfiguration) {
