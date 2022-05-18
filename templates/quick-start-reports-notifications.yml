@@ -22,18 +22,22 @@ Parameters:
   AccessKey:
     Type: String
     Description: Access Key of the IAM User
+    NoEcho: true
   SecretKey:
     Type: String
     Description: Secret Key of he IAM User
+    NoEcho: true
   RoleArn:
     Type: String
     Description: Arn of the IAM Role registered in the SP-API app
   ClientId:
     Type: String
     Description: Client Id of the SP-API app
+    NoEcho: true
   ClientSecret:
     Type: String
     Description: Client Secret of the SP-API app
+    NoEcho: true
   ReportStorageNotificationEmail:
     Type: String
     Description: Email address to which report generation updates are sent
