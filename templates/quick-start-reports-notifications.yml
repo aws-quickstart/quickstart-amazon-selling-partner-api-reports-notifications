@@ -73,7 +73,7 @@ Resources:
           - UsingDefaultBucket
           - !Sub '${QSS3BucketName}-${AWS::Region}'
           - !Ref QSS3BucketName
-        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/NotificationSubscriber/notifications-subscriber-1.0.jar"
+        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/NotificationsSubscriber/notifications-subscriber-1.0.jar"
       Handler: lambda.NotificationsSubscriberHandler
       Role: !GetAtt 
         - NotificationsSubscriberLambdaExecutionRole
@@ -169,7 +169,7 @@ Resources:
           - UsingDefaultBucket
           - !Sub '${QSS3BucketName}-${AWS::Region}'
           - !Ref QSS3BucketName
-        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/ReportsNotificationsProcessor/report-notification-processor-1.0.jar"
+        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/ReportNotificationProcessor/report-notification-processor-1.0.jar"
       Handler: lambda.ReportNotificationProcessorHandler
       Role: !GetAtt 
         - ReportsNotificationsProcessorLambdaExecutionRole
@@ -504,7 +504,7 @@ Resources:
           - UsingDefaultBucket
           - !Sub '${QSS3BucketName}-${AWS::Region}'
           - !Ref QSS3BucketName
-        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/ReportPresignedUrl/report-presigned-url-generator-1.0.jar"
+        S3Key: !Sub "${QSS3KeyPrefix}functions/packages/ReportPresignedUrlGenerator/report-presigned-url-generator-1.0.jar"
       Handler: lambda.ReportPresignedUrlGeneratorHandler
       Role: !GetAtt 
         - ReportPresignedUrlGeneratorLambdaExecutionRole
@@ -647,8 +647,8 @@ Resources:
       StateMachineName: ReportsNotificationsProcessor
       StateMachineType: STANDARD
       DefinitionS3Location:
-        Bucket: sp-api-quick-start-notifications
-        Key: ReportsNotificationsProcessor.json
+        Bucket: !Ref QSS3BucketName
+        Key: !Sub ${QSS3KeyPrefix}step-functions/ReportsNotificationsProcessor.json
       DefinitionSubstitutions:
         SPAPIReportStorageNotificationTopicArn: !Ref ReportStorageNotificationSNSTopic
         SPAPIReportDocumentRetrievalFunctionArn: !GetAtt
@@ -674,12 +674,11 @@ Resources:
   ReportsNotificationsProcessorLogGroup:
     Type: 'AWS::Logs::LogGroup'
     Properties:
-      LogGroupName: /aws/states/ReportsNotificationsProcessorLogs
+      LogGroupName: /aws/vendedlogs/ReportsNotificationsProcessorLogs
       RetentionInDays: 365
   ReportsNotificationsProcessorStateMachineExecutionRole:
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: ReportsNotificationsProcessorStateMachineExecutionRole
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -701,13 +700,17 @@ Resources:
                   - 'logs:ListLogDeliveries'
                   - 'logs:PutResourcePolicy'
                   - 'logs:DescribeResourcePolicies'
+                  - 'logs:DescribeLogGroups'                  
                 Resource: '*'
-              - Effect: Allow
-                Action:
-                  - 'logs:DescribeLogGroups'
-                Resource: !GetAtt 
-                  - ReportsNotificationsProcessorLogGroup
-                  - Arn
+                # Resource: !GetAtt 
+                #   - ReportsNotificationsProcessorLogGroup
+                #   - Arn
+              # - Effect: Allow
+              #   Action:
+              #     - 'logs:DescribeLogGroups'
+              #   Resource: !GetAtt 
+              #     - ReportsNotificationsProcessorLogGroup
+              #     - Arn
         - PolicyName: LambdaInvokePolicy
           PolicyDocument:
             Version: 2012-10-17
