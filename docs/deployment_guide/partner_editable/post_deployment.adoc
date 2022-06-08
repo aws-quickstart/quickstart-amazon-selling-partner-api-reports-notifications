@@ -13,10 +13,10 @@ This Quick Start enables three Amazon API Gateway endpoints. To successfully inv
 . Select the role with *Role name = ApiGatewayInvokeRole*.
 . Copy the role *ARN*.
 
-== Best practices for using {partner-product-short-name} on AWS
+=== Best practices for using {partner-product-short-name} on AWS
 For more information about Selling Partner API best practices, see the https://developer-docs.amazon.com/sp-api/docs/what-is-the-selling-partner-api[SP-API Developer Guide^].
 
-== Security
+=== Security
 This Quick Starts implements the following security best practices:
 
 . Application credentials secure storage using AWS Secrets Manager secrets.
@@ -24,9 +24,9 @@ This Quick Starts implements the following security best practices:
 . API authentication with temporary credentials.
 . Least privilege AWS IAM policies.
 
-== How to use
+=== How to use
 
-=== Test using a pre-built Postman collection
+==== Test using a pre-built Postman collection
 
 In order to create and process SP-API reports using a pre-built Postman collection, execute the following steps.
 
@@ -65,7 +65,7 @@ In order to create and process SP-API reports using a pre-built Postman collecti
 . Select *Body* tab, and replace *SellerId* and *RegionCode* with the values used in the previous steps. Update the remaining body parameters with valid values of the report you want to create.
 . Submit the request. This request will create a report in SP-API; once the report is created, the system will process the incoming notification, store the report locally and notify using the provided email address.
 
-=== Integrate into your product or application
+==== Integrate into your product or application
 
 In order to integrate this Quick Start into your product or application, execute the following steps.
 
@@ -118,4 +118,4 @@ In order to integrate this Quick Start into your product or application, execute
 
 == Next steps
 
-This Quick Start enables the *REPORT_PROCESSING_FINISHED* notification processing in an AWS Step Functions state machine. This state machine executes four steps: retrieves the report document, stores it, generates a presigned url for it and sends an email notification. This workflow covers a basic functionality and is intended to be used as a skeleton for a customized solution adapted to your product's need. In order to do this, extend the provided workflow by adding or removing https://docs.aws.amazon.com/step-functions/latest/dg/concepts-states.html[states^] to it.
+This Quick Start enables the *REPORT_PROCESSING_FINISHED* notification processing in an AWS Step Functions state machine. This state machine executes four steps: retrieves the report document, stores it, generates a presigned url for it and send an email notification. This workflow covers a basic functionality and is intended to be used as a skeleton for a customized solution adapted to your product's need. In order to do this, extend the provided workflow by adding or removing https://docs.aws.amazon.com/step-functions/latest/dg/concepts-states.html[states^] to it.
