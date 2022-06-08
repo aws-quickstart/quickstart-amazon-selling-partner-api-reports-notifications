@@ -20,7 +20,7 @@ For more information about Selling Partner API best practices, see the https://d
 This Quick Starts implements the following security best practices:
 
 . Application credentials secure storage using AWS Secrets Manager secrets.
-. Client token encryption using AWS KMS keys. By using the provided Amazon API Gateway *TokenStorageRestApi* and/or AWS Lambda *SPAPITokenStorage* function you are following credential encryption best practices.
+. Client token encryption using AWS KMS keys. By using the provided Amazon API Gateway *TokenStorageRestApi* endpoint and/or AWS Lambda *SPAPITokenStorage* function you are following credential encryption best practices.
 . API authentication with temporary credentials.
 . Least privilege AWS IAM policies.
 
