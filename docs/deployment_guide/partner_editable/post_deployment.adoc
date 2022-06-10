@@ -1,17 +1,23 @@
-== Post-deployment steps
+== Postdeployment steps
 
-This Quick Start enables three Amazon API Gateway endpoints. To successfully invoke them, temporary credentials from an AWS IAM role, also created as part of the deployment, have to be used. For this purpose, an AWS IAM user with permissions to assume the corresponding role is created. The following steps describe how to retrieve credentials for this user.
+=== Retrieve IAM user credentials to invoke API Gateway endpoints
+This Quick Start deploys three API Gateway endpoints and an AWS IAM role and user. You must use the temporary credentials of this user to successfully invoke the endpoints. Complete the following steps to retrieve the user's access keys and the Amazon Resource Name (ARN) of the role.
+
+==== IAM user access keys
 
 . Open the https://console.aws.amazon.com/iam/[AWS IAM console^].
 . In the navigation pane, choose *Users*.
-. Select the user with *User name = ApiGatewayInvokeUser*.
-. Go to *Security credentials* tab.
-. Under *Access keys* select *Create Access key*.
-. Copy the generated *Access key ID* and *Secret access key*, or click on *Download .csv file* alternatively.
+. Choose the user named *ApiGatewayInvokeUser*.
+. On the *Summary* page for the user, choose the *Security credentials* tab.
+. Under *Access keys* choose *Create Access key*.
+. Copy the generated *Access key ID* and *Secret access key*, or, choose *Download .csv file*.
+
+==== Role ARN
+
 . Open the https://console.aws.amazon.com/iam/[AWS IAM console^].
 . In the navigation pane, choose *Roles*.
-. Select the role with *Role name = ApiGatewayInvokeRole*.
-. Copy the role *ARN*.
+. Select the role named *ApiGatewayInvokeRole*.
+. On the *ApiGatewayInvokeRole* page, under *Summary*, copy the role *ARN*.
 
 === Best practices for using {partner-product-short-name} on AWS
 For more information about Selling Partner API best practices, see the https://developer-docs.amazon.com/sp-api/docs/what-is-the-selling-partner-api[SP-API Developer Guide^].
@@ -28,15 +34,15 @@ This Quick Starts implements the following security best practices:
 
 ==== Test using a pre-built Postman collection
 
-In order to create and process SP-API reports using a pre-built Postman collection, execute the following steps.
+Complete the following steps to create and process SP-API reports using a pre-built Postman collection.
 
 ==== Set up the Postman collection
 . Open the Selling Partner Reports API Quick Start https://documenter.getpostman.com/view/15862940/UyrEhadx[Postman collection documentation page^].
-. Click *Run in Postman* to import the collection to Postman client application.
-. In the imported Postman collection, go to *Variables*.
-. In *iamUserAccessKey* variable, under *CURRENT VALUE* paste the *Access key ID* obtained while executing the *Post-deployment steps*.
-. In *iamUserSecretKey* variable, under *CURRENT VALUE* paste the *Secret access key* obtained while executing the *Post-deployment steps*.
-. In *iamRoleArn* variable, under *CURRENT VALUE* paste the *ARN* obtained in the previous step.
+. Choose *Run in Postman* to import the collection to the Postman client application.
+. In the imported Postman collection, choose *Variables*.
+. Under *CURRENT VALUE*, for *iamUserAccessKey*, enter the *Access key ID* of the IAM user deployed by the Quick Start. To retrieve this, refer to <link to section>.
+. For *iamUserSecretKey* enter the *Secret access key* of the IAM user deployed by the Quick Start. To retrieve this, refer to <link to section>.
+. For *iamRoleArn*, enter the *ARN* of the IAM role deployed by the Quick Start. To retrieve this, refer to <link to section>.
 . Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
 . In the input search box, type *TokenStorageRestApi*.
 . Copy the value under *ID* column.
