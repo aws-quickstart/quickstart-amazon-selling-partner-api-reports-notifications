@@ -1,7 +1,7 @@
 == Postdeployment steps
 
 === Retrieve IAM user credentials to invoke API Gateway endpoints
-This Quick Start deploys three API Gateway endpoints and an AWS IAM role and user. You must use the temporary credentials of this user to successfully invoke the endpoints. Complete the following steps to retrieve the user's access keys and the Amazon Resource Name (ARN) of the role.
+This Quick Start deploys three API Gateway endpoints and an AWS IAM role and user. You must use the temporary credentials of this user to successfully invoke the endpoints. Complete the following steps to retrieve the user's access keys and the Amazon Resource Name (ARN) of the role. You will use these in the <Test the deployment> section, later in this guide.
 
 ==== IAM user access keys
 
@@ -19,59 +19,38 @@ This Quick Start deploys three API Gateway endpoints and an AWS IAM role and use
 . Select the role named *ApiGatewayInvokeRole*.
 . On the *ApiGatewayInvokeRole* page, under *Summary*, copy the role *ARN*.
 
-=== Best practices for using {partner-product-short-name} on AWS
-For more information about Selling Partner API best practices, see the https://developer-docs.amazon.com/sp-api/docs/what-is-the-selling-partner-api[SP-API Developer Guide^].
-
-=== Security
-This Quick Starts implements the following security best practices:
-
-. Application credentials secure storage using AWS Secrets Manager secrets.
-. Client token encryption using AWS KMS keys. By using the provided Amazon API Gateway *TokenStorageRestApi* endpoint and/or AWS Lambda *SPAPITokenStorage* function you are following credential encryption best practices.
-. API authentication with temporary credentials.
-. Least privilege AWS IAM policies.
-
-=== How to use
-
-==== Test using a pre-built Postman collection
+=== Test the deployment
 
 Complete the following steps to create and process SP-API reports using a pre-built Postman collection.
 
 ==== Set up the Postman collection
-. Open the Selling Partner Reports API Quick Start https://documenter.getpostman.com/view/15862940/UyrEhadx[Postman collection documentation page^].
+. Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
+. On the *APIs* page, copy the IDs for *TokenStorageRestApi*, *NotificationsSubscriberRestApi*, and *ReportCreatorRestApi*.
+. Open the *Selling Partner Reports API Quick Start* https://documenter.getpostman.com/view/15862940/UyrEhadx[Postman collection documentation page^].
 . Choose *Run in Postman* to import the collection to the Postman client application.
-. In the imported Postman collection, choose *Variables*.
-. Under *CURRENT VALUE*, for *iamUserAccessKey*, enter the *Access key ID* of the IAM user deployed by the Quick Start. To retrieve this, refer to <link to section>.
-. For *iamUserSecretKey* enter the *Secret access key* of the IAM user deployed by the Quick Start. To retrieve this, refer to <link to section>.
-. For *iamRoleArn*, enter the *ARN* of the IAM role deployed by the Quick Start. To retrieve this, refer to <link to section>.
-. Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
-. In the input search box, type *TokenStorageRestApi*.
-. Copy the value under *ID* column.
-. In the imported Postman collection, go to *Variables*.
-. In *tokenStorageApiId* variable, under *CURRENT VALUE* paste the *TokenStorageRestApi ID* obtained in the previous step.
-. Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
-. In the input search box, type *NotificationsSubscriberRestApi*.
-. Copy the value under *ID* column.
-. In the imported Postman collection, go to *Variables*.
-. In *notificationsSubscriberApiId* variable, under *CURRENT VALUE* paste the *NotificationsSubscriberRestApi ID* obtained in the previous step.
-. Open the https://console.aws.amazon.com/apigateway/[Amazon API Gateway console^].
-. In the input search box, type *ReportCreatorRestApi*.
-. Copy the value under *ID* column.
-. In the imported Postman collection, go to *Variables*.
-. In *reportCreatorApiId* variable, under *CURRENT VALUE* paste the *ReportCreatorRestApi ID* obtained in the previous step.
+. In the imported Postman collection, choose *Variables*. 
+. In the *CURRENT VALUE* column, enter the following variable values:
+.. For *iamUserAccessKey*, enter the *Access key ID* of the IAM user deployed by the Quick Start. To retrieve this, refer to <link to section>.
+.. For *iamUserSecretKey*, enter the *Secret access key* of the IAM user deployed by the Quick Start. To retrieve this, refer to <link to section>.
+.. For *iamRoleArn*, enter the *ARN* of the IAM role deployed by the Quick Start. To retrieve this, refer to <link to section>.
+.. For *tokenStorageApiId*, enter the ID for *TokenStorageRestApi*.
+.. For *notificationsSubscriberApiId*, in the *CURRENT VALUE* column, enter the ID for *NotificationsSubscriberRestApi*.
+.. For *reportCreatorApiId*, enter the ID for *ReportCreatorRestApi*.
 
 ==== Invoke the API endpoints
-. In the imported Postman collection, select and execute *STS Assume API Gateway Role* request. This request will retrieve temporary credentials from *ApiGatewayInvokeRole* role and automatically store them in collection variables.
-. In the imported Postman collection, select *Token Storage* request.
-. Select *Body* tab, and replace *SellerId* and *RefreshToken* with seller id and refresh token from the selling partner.
-. Submit the request. This request will encrypt and store in the AWS cloud the selling partner's credentials, to be used in subsequent SP-API calls.
-. In the imported Postman collection, select *Notifications Subscriber* request.
-. Select *Body* tab, and replace *SellerId* with the value used in the previous step. Replace *RegionCode* with the region of the selling partner. Valid values are "NA", "EU" and "FE".
-. Submit the request. This request will subscribe your application to *REPORT_PROCESSING_FINISHED* notification for the selling partner specified.
-. In the imported Postman collection, select *Report Creator* request.
-. Select *Body* tab, and replace *SellerId* and *RegionCode* with the values used in the previous steps. Update the remaining body parameters with valid values of the report you want to create.
-. Submit the request. This request will create a report in SP-API; once the report is created, the system will process the incoming notification, store the report locally and notify using the provided email address.
+. In the imported Postman collection, choose the *STS Assume API Gateway Role* request. 
+. Choose *Send* to submit the request. The request retrieves the temporary credentials from the *ApiGatewayInvokeRole* role and automatically stores them in collection variables.
+. In the imported Postman collection, choose the *Token Storage* request.
+. On the *Body* tab, replace the *SellerId* and *RefreshToken* values with the seller ID and refresh token from the Selling Partner.
+. Choose *Send*. The request encrypts and stores the Selling Partner's credentials in the AWS Cloud, to be used in subsequent SP-API calls.
+. In the imported Postman collection, choose the *Notifications Subscriber* request.
+. On the *Body* tab, replace the *SellerId* value with the Selling Partner seller ID. Replace the *RegionCode* value with the Selling Partner's AWS Region. Valid values are `NA`, `EU` and `FE`.
+. Choose *Send* to submit the request. The request subscribes your application to *REPORT_PROCESSING_FINISHED* notification for the specified Selling Partner.
+. In the imported Postman collection, choose the *Report Creator* request.
+. On the *Body* tab, replace the *SellerId* and *RegionCode* values with the Selling Partner's seller ID and Region. Complete the remaining parameters on the *Body* tab with valid values for the report you want to create.
+. Choose *Send* to submit the request. The request creates a report in SP-API. The system processes the incoming notification, stores the report locally, and sends a notification to the email address provided.
 
-==== Integrate into your product or application
+=== Integrate into your product or application
 
 In order to integrate this Quick Start into your product or application, execute the following steps.
 
@@ -122,6 +101,17 @@ In order to integrate this Quick Start into your product or application, execute
 }
 ----
 
-== Next steps
+=== Next steps
 
 This Quick Start enables the *REPORT_PROCESSING_FINISHED* notification processing in an AWS Step Functions state machine. This state machine executes four steps: retrieves the report document, stores it, generates a presigned url for it and send an email notification. This workflow covers a basic functionality and is intended to be used as a skeleton for a customized solution adapted to your product's need. In order to do this, extend the provided workflow by adding or removing https://docs.aws.amazon.com/step-functions/latest/dg/concepts-states.html[states^] to it.
+
+=== Best practices for using {partner-product-short-name} on AWS
+For more information about Selling Partner API best practices, see the https://developer-docs.amazon.com/sp-api/docs/what-is-the-selling-partner-api[SP-API Developer Guide^].
+
+=== Security
+This Quick Starts implements the following security best practices:
+
+. Application credentials secure storage using AWS Secrets Manager secrets.
+. Client token encryption using AWS KMS keys. By using the provided Amazon API Gateway *TokenStorageRestApi* endpoint and/or AWS Lambda *SPAPITokenStorage* function you are following credential encryption best practices.
+. API authentication with temporary credentials.
+. Least privilege AWS IAM policies.
