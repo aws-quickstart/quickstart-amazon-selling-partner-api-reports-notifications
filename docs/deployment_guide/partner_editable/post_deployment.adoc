@@ -81,7 +81,7 @@ There are three API Gateway endpoints: `TokenStorageRestApi`, `NotificationSubsc
 . In the navigation pane, choose *Stages*.
 . Expand the *prod* stage by choosing the right arrow.
 . Under */tokens*, choose *POST*.
-. Copy the URL for *Invoke URL*.
+. Copy the address for *Invoke URL*.
 
 `NotificationSubscriberRestApi`
 
@@ -90,7 +90,7 @@ There are three API Gateway endpoints: `TokenStorageRestApi`, `NotificationSubsc
 . In the navigation pane, choose *Stages*.
 . Expand the *prod* stage by choosing the right arrow.
 . Under */notifications*, choose *POST*.
-. Copy the URL for *Invoke URL*.
+. Copy the address for *Invoke URL*.
 
 `ReportCreatorRestApi`
 
@@ -99,7 +99,7 @@ There are three API Gateway endpoints: `TokenStorageRestApi`, `NotificationSubsc
 . In the navigation pane, choose *Stages*.
 . Expand the *prod* stage by choosing the right arrow.
 . Under */reports*, choose *POST*.
-. Copy the URL for *Invoke URL*.
+. Copy the address for *Invoke URL*.
 
 ==== Invoke the API endpoints
 
