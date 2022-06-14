@@ -109,10 +109,12 @@ To invoke the Quick Start API endpoints from your product or application, you'll
 * ARN of the deployed IAM role. Refer to <<Role ARN>>, earlier in this guide.
 * URLs for `TokenStorageRestApi`, `NotificationSubscriberRestApi`, and `ReportCreatorRestApi` endpoints. Refer to <<Retrieve the API Gateway endpoint URLs>>, earlier in this guide.
 
---
-. From your product or application, call the https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html[STS Assume Role API^]. Use the access key and secret access key of the deployed IAM user and the ARN of the deployed IAM role. This request retrieves temporary credentials from the `ApiGatewayInvokeRole` role which are used in subsequent API calls.
+From your product or application, complete the following steps:
 
-. From your product or application, send a POST request to `TokenStorageRestApi` using the `TokenStorageRestApi` endpoint URL. Sign the request using the temporary credentials from the `ApiGatewayInvokeRole` role. This request encrypts and stores the Selling Partner's credentials in the AWS Cloud which are used in subsequent SP-API calls. The following shows the body of a sample POST request.
+--
+. Call the https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html[STS Assume Role API^]. Use the access key and secret access key of the deployed IAM user and the ARN of the deployed IAM role. This request retrieves temporary credentials from the `ApiGatewayInvokeRole` role which are used in subsequent API calls.
+
+. Send a POST request to `TokenStorageRestApi` using the `TokenStorageRestApi` endpoint URL. Sign the request using the temporary credentials from the `ApiGatewayInvokeRole` role from step 1. This request encrypts and stores the Selling Partner's credentials in the AWS Cloud which are used in subsequent SP-API calls. The following shows the body of a sample request.
 +
 ----
   {
@@ -122,7 +124,7 @@ To invoke the Quick Start API endpoints from your product or application, you'll
 ----
 +
 [start=3]
-. From your product or application, execute a POST request to *NotificationsSubscriberRestApi* using the *Invoke URL* obtained in the previous step. Sign the request using temporary credentials obtained from STS Assume Role. This request will subscribe your application to *REPORT_PROCESSING_FINISHED* notification for the selling partner specified. Below you can find a sample request body.
+. Send a POST request to `NotificationsSubscriberRestApi` using the `NotificationsSubscriberRestApi` endpoint URL. Sign the request using the temporary credentials from the `ApiGatewayInvokeRole` role from step 1. This request subscribes your application to the `REPORT_PROCESSING_FINISHED` notification for the specified Selling Partner specified. The following shows the body of a sample request.
 +
 ----
 {
@@ -131,7 +133,7 @@ To invoke the Quick Start API endpoints from your product or application, you'll
   "NotificationType": "REPORT_PROCESSING_FINISHED"
 }
 ----
-. From your product or application, execute a POST request to *ReportCreatorRestApi* using the *Invoke URL* obtained in the previous step. Sign the request using temporary credentials obtained from STS Assume Role. This request will create a report in SP-API; once the report is created, the system will process the incoming notification, store the report locally and notify using the provided email address. Below you can find a sample request body.
+. Send a POST request to `ReportCreatorRestApi` using the `ReportCreatorRestApi` endpoint URL. Sign the request using the temporary credentials from the `ApiGatewayInvokeRole` role from step 1. This request creates a report in SP-API. Then, the system processes the incoming notification, stores the report locally, and notifies using the email address provided. The following shows the body of a sample request.
 +
 ----
 {
