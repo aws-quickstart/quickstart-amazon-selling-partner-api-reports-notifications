@@ -110,7 +110,6 @@ To invoke the Quick Start API endpoints from your product or application, you'll
 * URLs for `TokenStorageRestApi`, `NotificationSubscriberRestApi`, and `ReportCreatorRestApi` endpoints. Refer to <<Retrieve the API Gateway endpoint URLs>>, earlier in this guide.
 
 From your product or application, complete the following steps:
-
 --
 . Call the https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html[STS Assume Role API^]. Use the access key and secret access key of the deployed IAM user and the ARN of the deployed IAM role. This request retrieves temporary credentials from the `ApiGatewayInvokeRole` role which are used in subsequent API calls.
 
@@ -147,17 +146,20 @@ From your product or application, complete the following steps:
 }
 ----
 
-=== Next steps
 
-This Quick Start enables the *REPORT_PROCESSING_FINISHED* notification processing in an AWS Step Functions state machine. This state machine executes four steps: retrieves the report document, stores it, generates a presigned url for it and send an email notification. This workflow covers a basic functionality and is intended to be used as a skeleton for a customized solution adapted to your product's need. In order to do this, extend the provided workflow by adding or removing https://docs.aws.amazon.com/step-functions/latest/dg/concepts-states.html[states^] to it.
+=== AWS Step Functions workflow
+
+This Quick Start enables `REPORT_PROCESSING_FINISHED` notification processing in an AWS Step Functions state machine. The state machine completes four steps: retrieve the report document, store it, generate a presigned URL for it, and send an email notification. This workflow covers basic functionality and is intended to be used as a template for a customized solution adapted to your product's need. To extend the workflow, add or remove states. For more information, refer to https://docs.aws.amazon.com/step-functions/latest/dg/concepts-states.html[States^].
 
 === Best practices for using {partner-product-short-name} on AWS
-For more information about Selling Partner API best practices, see the https://developer-docs.amazon.com/sp-api/docs/what-is-the-selling-partner-api[SP-API Developer Guide^].
+
+For more information about Selling Partner API best practices, refer to  the https://developer-docs.amazon.com/sp-api/docs/what-is-the-selling-partner-api[What is the Selling Partner API^].
 
 === Security
+
 This Quick Starts implements the following security best practices:
 
 . Application credentials secure storage using AWS Secrets Manager secrets.
-. Client token encryption using AWS KMS keys. By using the provided Amazon API Gateway *TokenStorageRestApi* endpoint and/or AWS Lambda *SPAPITokenStorage* function you are following credential encryption best practices.
+. Client token encryption using AWS KMS keys. By using the provided API Gateway `TokenStorageRestApi` endpoint and/or AWS Lambda `SPAPITokenStorage` function you are following credential encryption best practices.
 . API authentication with temporary credentials.
-. Least privilege AWS IAM policies.
+. Least privilege IAM policies.
