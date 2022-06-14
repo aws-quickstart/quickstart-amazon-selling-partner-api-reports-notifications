@@ -111,9 +111,9 @@ To invoke the Quick Start API endpoints from your product or application, you'll
 
 From your product or application, complete the following steps:
 --
-. Call the https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html[STS Assume Role API^]. Use the access key and secret access key of the deployed IAM user and the ARN of the deployed IAM role. This request retrieves temporary credentials from the `ApiGatewayInvokeRole` role which are used in subsequent API calls.
+. Call the https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html[STS Assume Role API^]. Use the access key and secret access key of the deployed IAM user and the ARN of the deployed IAM role. This request retrieves temporary credentials from the `ApiGatewayInvokeRole` role, which are used in subsequent API calls.
 
-. Send a POST request to `TokenStorageRestApi` using the `TokenStorageRestApi` endpoint URL. Sign the request using the temporary credentials from the `ApiGatewayInvokeRole` role from step 1. This request encrypts and stores the Selling Partner's credentials in the AWS Cloud which are used in subsequent SP-API calls. The following shows the body of a sample request.
+. Send a POST request to `TokenStorageRestApi` using the `TokenStorageRestApi` endpoint URL. Sign the request using the temporary credentials from the `ApiGatewayInvokeRole` role from step 1. This request encrypts and stores the Selling Partner's credentials in the AWS Cloud, which are used in subsequent SP-API calls. The following shows the body of a sample request.
 +
 ----
   {
