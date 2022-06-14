@@ -1,7 +1,7 @@
 == Postdeployment steps
 
 === Retrieve IAM user credentials to invoke API Gateway endpoints
-This Quick Start deploys three API Gateway endpoints and an AWS IAM role and user. You must use the temporary credentials of this user to successfully invoke the endpoints. Complete the following steps to retrieve the user's access keys and the Amazon Resource Name (ARN) of the role. You will use these in the <Test the deployment> section, later in this guide.
+This Quick Start deploys three API Gateway endpoints and an IAM role and user.  Complete the following steps to retrieve the user's access keys and the Amazon Resource Name (ARN) of the role. You will use these to test the deployment and invoke the API endpoints from your product or application.
 
 ==== IAM user access keys
 
@@ -103,15 +103,27 @@ There are three API Gateway endpoints: `TokenStorageRestApi`, `NotificationSubsc
 
 ==== Invoke the API endpoints
 
-. From your product or application, execute https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html[STS Assume Role API^] using the AWS IAM user's *Access Key* and *Secret Access Key*, and the AWS IAM role ARN obtained while executing the *Post-deployment steps*. This request will retrieve temporary credentials from *ApiGatewayInvokeRole* role to use in the subsequent API calls.
-. From your product or application, execute a POST request to *TokenStorageRestApi* using the *Invoke URL* obtained in the previous step. Sign the request using temporary credentials obtained from STS Assume Role. This request will encrypt and store in the AWS cloud the selling partner's credentials, to be used in subsequent SP-API calls. Below you can find a sample request body.
+To invoke the Quick Start API endpoints from your product or application, you'll need the following:
+
+* Access key and secret access key of the deployed IAM user. Refer to <<IAM user access keys>>, earlier in this guide.
+* ARN of the deployed IAM role. Refer to <<Role ARN>>, earlier in this guide.
+* URLs for `TokenStorageRestApi`, `NotificationSubscriberRestApi`, and `ReportCreatorRestApi` endpoints. Refer to <<Retrieve the API Gateway endpoint URLs>>, earlier in this guide.
+
+--
+. From your product or application, call the https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html[STS Assume Role API^]. Use the access key and secret access key of the deployed IAM user and the ARN of the deployed IAM role. This request retrieves temporary credentials from the `ApiGatewayInvokeRole` role which are used in subsequent API calls.
+
+. From your product or application, send a POST request to `TokenStorageRestApi` using the `TokenStorageRestApi` endpoint URL. Sign the request using the temporary credentials from the `ApiGatewayInvokeRole` role. This request encrypts and stores the Selling Partner's credentials in the AWS Cloud which are used in subsequent SP-API calls. The following shows the body of a sample POST request.
++
 ----
-{
-  "SellerId": "ABC...",
-  "RefreshToken": "Atzr|..."
-}
+  {
+    "SellerId": "ABC...",
+    "RefreshToken": "Atzr|..."
+  }
 ----
++
+[start=3]
 . From your product or application, execute a POST request to *NotificationsSubscriberRestApi* using the *Invoke URL* obtained in the previous step. Sign the request using temporary credentials obtained from STS Assume Role. This request will subscribe your application to *REPORT_PROCESSING_FINISHED* notification for the selling partner specified. Below you can find a sample request body.
++
 ----
 {
   "SellerId": "ABC...",
@@ -120,6 +132,7 @@ There are three API Gateway endpoints: `TokenStorageRestApi`, `NotificationSubsc
 }
 ----
 . From your product or application, execute a POST request to *ReportCreatorRestApi* using the *Invoke URL* obtained in the previous step. Sign the request using temporary credentials obtained from STS Assume Role. This request will create a report in SP-API; once the report is created, the system will process the incoming notification, store the report locally and notify using the provided email address. Below you can find a sample request body.
++
 ----
 {
   "SellerId": "ABC...",
