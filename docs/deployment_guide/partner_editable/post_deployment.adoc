@@ -68,6 +68,8 @@ Complete the following steps to create and process SP-API reports using a pre-bu
 
 === Integrate the Quick Start with your product or application
 
+Complete the steps in this section to retrieve the Quick Start API endpoint URLs and invoke them from your product or application.
+
 ==== Retrieve the API Gateway endpoint URLs
 
 There are three API Gateway endpoints: `TokenStorageRestApi`, `NotificationSubscriberRestApi`, and `ReportCreatorRestApi`. For each of these endpoints, retrieve its URL from the API Gateway console. 
