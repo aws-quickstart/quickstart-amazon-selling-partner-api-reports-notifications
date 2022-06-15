@@ -34,9 +34,9 @@ For more information, see https://docs.aws.amazon.com/AWSCloudFormation/latest/U
 '''
 *Q.* Will I automatically start receiving notifications for report processing completion after installing this Quick Start?
 
-*A.* No. In order to start receiving notifications you must create the corresponding subscription by using the Amazon API Gateway *NotificationsSubscriberRestApi* endpoint. Subscriptions are specific to Selling Partners. You must call *NotificationsSubscriberRestApi* for each Selling Partner that you want to onboard to this Quick Start.
+*A.* No. In order to start receiving notifications you must create the corresponding subscription by using the Amazon API Gateway *NotificationsSubscriberRestApi* endpoint. Subscriptions are specific to Selling Partners. You must call *NotificationsSubscriberRestApi* for each selling partner that you want to onboard to this Quick Start.
 
 '''
-*Q.* Is it mandatory to store Selling Partner refresh tokens using the Amazon API Gateway *TokenStorageRestApi* endpoint provided in this Quick Start?
+*Q.* Is it mandatory to store selling partner refresh tokens using the Amazon API Gateway *TokenStorageRestApi* endpoint provided in this Quick Start?
 
-*A.* Yes. The AWS Step Functions workflow that is invoked when a report processing completion notification is received communicates to SP-API asynchronously. It signs the corresponding requests with the Selling Partner's refresh token. For this reason, the refresh tokens have to be stored.
+*A.* Yes. The AWS Step Functions workflow that is invoked when a report processing completion notification is received communicates to SP-API asynchronously. It signs the corresponding requests with the selling partner's refresh token. For this reason, the refresh tokens have to be stored.

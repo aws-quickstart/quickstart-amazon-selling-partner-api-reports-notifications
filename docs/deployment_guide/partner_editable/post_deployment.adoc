@@ -51,19 +51,19 @@ Complete the following steps to create and process SP-API reports using a pre-bu
 `TokenStorageRestApi`
 
 . In your Postman workspace, under the *Selling Partner Reports API Quick Start* collection, choose the *Token Storage* request.
-. On the *Body* tab, replace the *SellerId* and *RefreshToken* values with the seller ID and refresh token from the Selling Partner.
-. Choose *Send*. The request encrypts and stores the Selling Partner's credentials in the AWS Cloud, to be used in subsequent SP-API calls.
+. On the *Body* tab, replace the *SellerId* and *RefreshToken* values with the seller ID and refresh token from the selling partner.
+. Choose *Send*. The request encrypts and stores the selling partner's credentials in the AWS Cloud, to be used in subsequent SP-API calls.
 
 `NotificationsSubscriberRestApi`
 
 . In your Postman workspace, under the *Selling Partner Reports API Quick Start* collection, choose the the *Notifications Subscriber* request.
-. On the *Body* tab, replace the *SellerId* value with the Selling Partner seller ID. Replace the *RegionCode* value with the Selling Partner's AWS Region. Valid values are `NA`, `EU` and `FE`.
-. Choose *Send* to submit the request. The request subscribes your application to *REPORT_PROCESSING_FINISHED* notification for the specified Selling Partner.
+. On the *Body* tab, replace the *SellerId* value with the selling partner seller ID. Replace the *RegionCode* value with the selling partner's AWS Region. Valid values are `NA`, `EU` and `FE`.
+. Choose *Send* to submit the request. The request subscribes your application to *REPORT_PROCESSING_FINISHED* notification for the specified selling partner.
 
 `reportCreatorApiId`
 
 . In your Postman workspace, under the *Selling Partner Reports API Quick Start* collection, choose the the *Report Creator* request.
-. On the *Body* tab, replace the *SellerId* and *RegionCode* values with the Selling Partner's seller ID and Region. Complete the remaining parameters on the *Body* tab with valid values for the report you want to create.
+. On the *Body* tab, replace the *SellerId* and *RegionCode* values with the selling partner's seller ID and Region. Complete the remaining parameters on the *Body* tab with valid values for the report you want to create.
 . Choose *Send* to submit the request. The request creates a report in SP-API. The system processes the incoming notification, stores the report locally, and sends a notification to the email address provided.
 
 === Integrate the Quick Start with your product or application
@@ -113,7 +113,7 @@ From your product or application, complete the following steps:
 --
 . Call the https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html[STS Assume Role API^]. Use the access key and secret access key of the deployed IAM user and the ARN of the deployed IAM role. This request retrieves temporary credentials from the `ApiGatewayInvokeRole` role, which are used in subsequent API calls.
 
-. Send a POST request to `TokenStorageRestApi` using the `TokenStorageRestApi` endpoint URL. Sign the request using the temporary credentials from the `ApiGatewayInvokeRole` role from step 1. This request encrypts and stores the Selling Partner's credentials in the AWS Cloud, which are used in subsequent SP-API calls. The following shows the body of a sample request.
+. Send a POST request to `TokenStorageRestApi` using the `TokenStorageRestApi` endpoint URL. Sign the request using the temporary credentials from the `ApiGatewayInvokeRole` role from step 1. This request encrypts and stores the selling partner's credentials in the AWS Cloud, which are used in subsequent SP-API calls. The following shows the body of a sample request.
 +
 ----
   {
@@ -123,7 +123,7 @@ From your product or application, complete the following steps:
 ----
 +
 [start=3]
-. Send a POST request to `NotificationsSubscriberRestApi` using the `NotificationsSubscriberRestApi` endpoint URL. Sign the request using the temporary credentials from the `ApiGatewayInvokeRole` role from step 1. This request subscribes your application to the `REPORT_PROCESSING_FINISHED` notification for the specified Selling Partner specified. The following shows the body of a sample request.
+. Send a POST request to `NotificationsSubscriberRestApi` using the `NotificationsSubscriberRestApi` endpoint URL. Sign the request using the temporary credentials from the `ApiGatewayInvokeRole` role from step 1. This request subscribes your application to the `REPORT_PROCESSING_FINISHED` notification for the specified selling partner specified. The following shows the body of a sample request.
 +
 ----
 {
