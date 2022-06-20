@@ -28,3 +28,17 @@ As shown in <<architecture1>>, the Quick Start sets up a serverless, event-drive
 ... *SPAPIReportDocumentStorage:* to store report documents in the account-owned Amazon S3 bucket.
 ... *SPAPIReportPresignedUrlGenerator:* to generate presigned urls for the stored report documents.
 .. An Amazon SNS topic, *SPAPIReportStorageNotificationTopic*, to notify report processing completion.
+
+
+
+Three Amazon API Gateway HTTP endpoints, providing REST APIs for three Lambda functions.
+Token Storage to encrypt and store the selling partner's SP-API refresh token. 
+Notifications subscriber to subscribe the selling partner to the SP-API notifications.
+Report creator to submit report creation requests to SP-API.
+Two Amazon Dynamo DB tables.
+Client tokens to store client tokens.
+Report information to store report information.
+An AWS IAM role to authenticate API Gateway requests.
+AWS Key Management Service (AWS KMS) to encrypt and decrypt client tokens.
+AWS Secrets Manager to store SP-API IAM user credentials and SP-API application credentials.
+An
