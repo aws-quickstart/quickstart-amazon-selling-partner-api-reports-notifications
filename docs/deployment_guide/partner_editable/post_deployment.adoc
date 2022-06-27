@@ -41,7 +41,7 @@ Complete the following steps to create and process SP-API reports using a pre-bu
 .. For *notificationsSubscriberApiId*, in the *CURRENT VALUE* column, enter the ID for `NotificationsSubscriberRestApi`.
 .. For *reportCreatorApiId*, enter the ID for `ReportCreatorRestApi`
 
-==== Retrieve credentials from `ApiGatewayInvokeRole`.
+==== Retrieve credentials from `ApiGatewayInvokeRole`
 
 . In your Postman workspace, under the *Selling Partner Reports API Quick Start* collection, choose the *STS Assume API Gateway Role* request. 
 . Choose *Send* to submit the request. The request retrieves the temporary credentials from `ApiGatewayInvokeRole` and automatically stores them in collection variables.
