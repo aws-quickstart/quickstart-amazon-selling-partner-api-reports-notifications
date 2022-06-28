@@ -1,3 +1,5 @@
-==== Prepare your Seller Central account
+== Predeployment steps
+
+=== Prepare your Seller Central account
 
 You must have a Professional selling plan on https://sellercentral.amazon.com[Amazon Seller Central^] and https://developer-docs.amazon.com/sp-api/docs/registering-as-a-developer[register^] as a developer to create SP-API applications.
