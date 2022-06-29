@@ -1,0 +1,1 @@
+This guide provides instructions for deploying the {partner-product-short-name} Quick Start reference architecture on the AWS Cloud. If you are unfamiliar with AWS Quick Starts, refer to the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide^].

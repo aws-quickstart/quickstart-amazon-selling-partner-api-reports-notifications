@@ -1,0 +1,10 @@
+:quickstart-project-name: quickstart-amazon-selling-partner-api-reports-notifications
+:partner-product-name: Selling Partner Reports API
+:partner-product-short-name: Selling Partner Reports API
+:partner-company-name: Amazon Selling Partner Developer Services
+:doc-month: June
+:doc-year: 2022
+:partner-contributors: Federico Rodriguez, {partner-company-name}
+:quickstart-contributors: Andrew Glenn, AWS Integration & Automation team
+:deployment_time: 5 minutes
+:default_deployment_region: us-east-1
