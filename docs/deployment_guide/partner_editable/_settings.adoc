@@ -8,5 +8,3 @@
 :quickstart-contributors: Andrew Glenn, AWS Integration & Automation team
 :deployment_time: 5 minutes
 :default_deployment_region: us-east-1
-
-
