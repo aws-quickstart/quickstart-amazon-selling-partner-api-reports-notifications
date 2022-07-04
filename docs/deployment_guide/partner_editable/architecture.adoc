@@ -8,8 +8,6 @@ image::../images/architecture_diagram.png[Architecture]
 
 As shown in <<architecture1>>, the Quick Start sets up the following:
 
-The Quick Start sets up the following:
-
 * Three Amazon API Gateway HTTP endpoints, providing REST APIs for three Lambda functions.
 ** Token storage to encrypt and store the selling partner's SP-API refresh token.
 ** Notifications subscriber to subscribe the selling partner to the SP-API notifications.
