@@ -37,9 +37,9 @@ Complete the following steps to create and process SP-API reports using a pre-bu
 .. For *iamUserAccessKey*, enter the *Access key ID* of the IAM user deployed by the Quick Start. To retrieve this, refer to <<IAM user access keys>>.
 .. For *iamUserSecretKey*, enter the *Secret access key* of the IAM user deployed by the Quick Start. To retrieve this, refer to <<IAM user access keys>>.
 .. For *iamRoleArn*, enter the *ARN* of the IAM role deployed by the Quick Start. To retrieve this, refer to <<Role ARN>>.
-.. For *tokenStorageApiId*, enter the ID for `TokenStorageRestApi`.
-.. For *notificationsSubscriberApiId*, in the *CURRENT VALUE* column, enter the ID for `NotificationsSubscriberRestApi`.
-.. For *reportCreatorApiId*, enter the ID for `ReportCreatorRestApi`
+.. For *tokenStorageApiId*, enter the ID for `TokenStorageRestApi`. To retrieve this, refer to <<Retrieve API Gateway endpoint IDs>>.
+.. For *notificationsSubscriberApiId*, enter the ID for `NotificationsSubscriberRestApi`. To retrieve this, refer to <<Retrieve API Gateway endpoint IDs>>.
+.. For *reportCreatorApiId*, enter the ID for `ReportCreatorRestApi`. To retrieve this, refer to <<Retrieve API Gateway endpoint IDs>>.
 
 ==== Retrieve credentials
 
@@ -60,7 +60,7 @@ Complete the following steps to create and process SP-API reports using a pre-bu
 . On the *Body* tab, replace the *SellerId* value with the selling partner seller ID. Replace the *RegionCode* value with the selling partner's AWS Region. Valid values are `NA`, `EU` and `FE`.
 . Choose *Send* to submit the request. The request subscribes your application to *REPORT_PROCESSING_FINISHED* notification for the specified selling partner.
 
-**reportCreatorApiId**
+**ReportCreatorRestApi**
 
 . In your Postman workspace, under the *Selling Partner Reports API Quick Start* collection, choose the *Report Creator* request.
 . On the *Body* tab, replace the *SellerId* and *RegionCode* values with the selling partner's seller ID and Region. Complete the remaining parameters on the *Body* tab with valid values for the report you want to create.
@@ -72,7 +72,7 @@ Complete the steps in this section to retrieve the Quick Start API endpoint URLs
 
 ==== Retrieve the API Gateway endpoint URLs
 
-There are three API Gateway endpoints: `TokenStorageRestApi`, `NotificationSubscriberRestApi`, and `ReportCreatorRestApi`. For each of these endpoints, retrieve its URL from the API Gateway console.
+There are three API Gateway endpoints: `TokenStorageRestApi`, `NotificationsSubscriberRestApi`, and `ReportCreatorRestApi`. For each of these endpoints, retrieve its URL from the API Gateway console.
 
 **TokenStorageRestApi**
 
@@ -83,10 +83,10 @@ There are three API Gateway endpoints: `TokenStorageRestApi`, `NotificationSubsc
 . Under */tokens*, choose *POST*.
 . Copy the address for *Invoke URL*.
 
-**NotificationSubscriberRestApi**
+**NotificationsSubscriberRestApi**
 
 . Sign in to the AWS Management Console, and open the https://console.aws.amazon.com/apigateway/[API Gateway console^].
-. On the APIs page, choose `NotificationSubscriberRestApi`.
+. On the APIs page, choose `NotificationsSubscriberRestApi`.
 . In the navigation pane, choose *Stages*.
 . Expand the *prod* stage by choosing the right arrow.
 . Under */notifications*, choose *POST*.
@@ -95,7 +95,7 @@ There are three API Gateway endpoints: `TokenStorageRestApi`, `NotificationSubsc
 **ReportCreatorRestApi**
 
 . Sign in to the AWS Management Console, and open the https://console.aws.amazon.com/apigateway/[API Gateway console^].
-. On the APIs page, choose `NotificationSubscriberRestApi`.
+. On the APIs page, choose `ReportCreatorRestApi`.
 . In the navigation pane, choose *Stages*.
 . Expand the *prod* stage by choosing the right arrow.
 . Under */reports*, choose *POST*.
@@ -107,7 +107,7 @@ To invoke the Quick Start API endpoints from your product or application, you'll
 
 * Access key and secret access key of the deployed IAM user. Refer to <<IAM user access keys>>, earlier in this guide.
 * ARN of the deployed IAM role. Refer to <<Role ARN>>, earlier in this guide.
-* URLs for `TokenStorageRestApi`, `NotificationSubscriberRestApi`, and `ReportCreatorRestApi` endpoints. Refer to <<Retrieve the API Gateway endpoint URLs>>, earlier in this guide.
+* URLs for `TokenStorageRestApi`, `NotificationsSubscriberRestApi`, and `ReportCreatorRestApi` endpoints. Refer to <<Retrieve the API Gateway endpoint URLs>>, earlier in this guide.
 
 From your product or application, complete the following steps:
 
