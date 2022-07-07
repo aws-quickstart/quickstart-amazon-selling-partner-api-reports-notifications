@@ -83,6 +83,27 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <configuration>
+                            <file>${project.basedir}/dependencies/sellingpartnerapi-aa-java-1.0.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>com.amazon.sellingpartnerapi</groupId>
+                            <artifactId>sellingpartnerapi-aa-java</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- attach test jar -->
             <plugin>
@@ -226,8 +247,6 @@
             <groupId>com.amazon.sellingpartnerapi</groupId>
             <artifactId>sellingpartnerapi-aa-java</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/dependencies/sellingpartnerapi-aa-java-1.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
@@ -269,7 +288,13 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>19.0</version>
+            <version>31.1-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <version>2.5.2</version>
+            <scope>compile</scope>
         </dependency>
         <!-- test dependencies -->
         <dependency>
