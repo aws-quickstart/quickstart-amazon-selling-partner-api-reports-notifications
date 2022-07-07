@@ -928,9 +928,6 @@ Refer to the <a href="https://github.com/{quickstart-github-org}/quickstart-amaz
 <div class="paragraph">
 <p>As shown in <a href="#architecture1">Figure 1</a>, the Quick Start sets up the following:</p>
 </div>
-<div class="paragraph">
-<p>The Quick Start sets up the following:</p>
-</div>
 <div class="ulist">
 <ul>
 <li>
@@ -1165,13 +1162,13 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 <p>For <strong>iamRoleArn</strong>, enter the <strong>ARN</strong> of the IAM role deployed by the Quick Start. To retrieve this, refer to <a href="#_role_arn">Role ARN</a>.</p>
 </li>
 <li>
-<p>For <strong>tokenStorageApiId</strong>, enter the ID for <code>TokenStorageRestApi</code>.</p>
+<p>For <strong>tokenStorageApiId</strong>, enter the ID for <code>TokenStorageRestApi</code>. To retrieve this, refer to <a href="#_retrieve_api_gateway_endpoint_ids">Retrieve API Gateway endpoint IDs</a>.</p>
 </li>
 <li>
-<p>For <strong>notificationsSubscriberApiId</strong>, in the <strong>CURRENT VALUE</strong> column, enter the ID for <code>NotificationsSubscriberRestApi</code>.</p>
+<p>For <strong>notificationsSubscriberApiId</strong>, enter the ID for <code>NotificationsSubscriberRestApi</code>. To retrieve this, refer to <a href="#_retrieve_api_gateway_endpoint_ids">Retrieve API Gateway endpoint IDs</a>.</p>
 </li>
 <li>
-<p>For <strong>reportCreatorApiId</strong>, enter the ID for <code>ReportCreatorRestApi</code></p>
+<p>For <strong>reportCreatorApiId</strong>, enter the ID for <code>ReportCreatorRestApi</code>. To retrieve this, refer to <a href="#_retrieve_api_gateway_endpoint_ids">Retrieve API Gateway endpoint IDs</a>.</p>
 </li>
 </ol>
 </div>
@@ -1227,7 +1224,7 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 </ol>
 </div>
 <div class="paragraph">
-<p><strong>reportCreatorApiId</strong></p>
+<p><strong>ReportCreatorRestApi</strong></p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -1252,7 +1249,7 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 <div class="sect3">
 <h4 id="_retrieve_the_api_gateway_endpoint_urls">Retrieve the API Gateway endpoint URLs</h4>
 <div class="paragraph">
-<p>There are three API Gateway endpoints: <code>TokenStorageRestApi</code>, <code>NotificationSubscriberRestApi</code>, and <code>ReportCreatorRestApi</code>. For each of these endpoints, retrieve its URL from the API Gateway console.</p>
+<p>There are three API Gateway endpoints: <code>TokenStorageRestApi</code>, <code>NotificationsSubscriberRestApi</code>, and <code>ReportCreatorRestApi</code>. For each of these endpoints, retrieve its URL from the API Gateway console.</p>
 </div>
 <div class="paragraph">
 <p><strong>TokenStorageRestApi</strong></p>
@@ -1280,7 +1277,7 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 </ol>
 </div>
 <div class="paragraph">
-<p><strong>NotificationSubscriberRestApi</strong></p>
+<p><strong>NotificationsSubscriberRestApi</strong></p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -1288,7 +1285,7 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 <p>Sign in to the AWS Management Console, and open the <a href="https://console.aws.amazon.com/apigateway/" target="_blank" rel="noopener">API Gateway console</a>.</p>
 </li>
 <li>
-<p>On the APIs page, choose <code>NotificationSubscriberRestApi</code>.</p>
+<p>On the APIs page, choose <code>NotificationsSubscriberRestApi</code>.</p>
 </li>
 <li>
 <p>In the navigation pane, choose <strong>Stages</strong>.</p>
@@ -1313,7 +1310,7 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 <p>Sign in to the AWS Management Console, and open the <a href="https://console.aws.amazon.com/apigateway/" target="_blank" rel="noopener">API Gateway console</a>.</p>
 </li>
 <li>
-<p>On the APIs page, choose <code>NotificationSubscriberRestApi</code>.</p>
+<p>On the APIs page, choose <code>ReportCreatorRestApi</code>.</p>
 </li>
 <li>
 <p>In the navigation pane, choose <strong>Stages</strong>.</p>
@@ -1344,7 +1341,7 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 <p>ARN of the deployed IAM role. Refer to <a href="#_role_arn">Role ARN</a>, earlier in this guide.</p>
 </li>
 <li>
-<p>URLs for <code>TokenStorageRestApi</code>, <code>NotificationSubscriberRestApi</code>, and <code>ReportCreatorRestApi</code> endpoints. Refer to <a href="#_retrieve_the_api_gateway_endpoint_urls">Retrieve the API Gateway endpoint URLs</a>, earlier in this guide.</p>
+<p>URLs for <code>TokenStorageRestApi</code>, <code>NotificationsSubscriberRestApi</code>, and <code>ReportCreatorRestApi</code> endpoints. Refer to <a href="#_retrieve_the_api_gateway_endpoint_urls">Retrieve the API Gateway endpoint URLs</a>, earlier in this guide.</p>
 </li>
 </ul>
 </div>
