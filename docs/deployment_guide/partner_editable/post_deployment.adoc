@@ -40,7 +40,7 @@ Complete the following steps to create and process SP-API reports using a pre-bu
 .. For *tokenStorageApiId*, enter the ID for `TokenStorageRestApi`. To retrieve this, refer to <<Retrieve API Gateway endpoint IDs>>.
 .. For *notificationsSubscriberApiId*, enter the ID for `NotificationsSubscriberRestApi`. To retrieve this, refer to <<Retrieve API Gateway endpoint IDs>>.
 .. For *reportCreatorApiId*, enter the ID for `ReportCreatorRestApi`. To retrieve this, refer to <<Retrieve API Gateway endpoint IDs>>.
-.. For *stackRegion*, enter the AWS region in which the stack was created. E.g. `us-east-1`, `eu-west-1`, etc.
+.. For *stackRegion*, enter the AWS Region in which the stack was created (for example, `us-east-1` or `eu-west-1`).
 
 ==== Retrieve credentials
 
