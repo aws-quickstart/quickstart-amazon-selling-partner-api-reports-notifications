@@ -1,5 +1,8 @@
 == Postdeployment steps
 
+=== Confirm the SNS subscription
+When a report is generated, this Quick Starts sends a notification to the email specified in the *Parameters* section of the CloudFormation stack creation. In order to receive these emails, the Amazon SNS subscription has to be confirmed. To do it, go to your inbox, look for an email from Amazon SNS and click *Confirm subscription*.
+
 === Retrieve IAM user credentials to invoke API Gateway endpoints
 This Quick Start deploys three API Gateway endpoints and an IAM role and user.  Complete the following steps to retrieve the user's access keys and the Amazon Resource Name (ARN) of the role. You will use these to test the deployment and invoke the API endpoints from your product or application.
 
