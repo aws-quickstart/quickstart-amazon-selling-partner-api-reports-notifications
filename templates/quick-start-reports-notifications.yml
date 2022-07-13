@@ -40,6 +40,7 @@ Parameters:
     NoEcho: true
   ReportStorageNotificationEmail:
     Type: String
+    AllowedPattern: '^[0-9a-zA-Z._%+-]+@[0-9a-zA-Z.-]+\.[a-zA-Z]{2,}$'
     Description: Email address to which report generation updates are sent
   QSS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
