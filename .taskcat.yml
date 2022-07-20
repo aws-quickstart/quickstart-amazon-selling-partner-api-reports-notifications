@@ -1,6 +1,6 @@
 project:
   s3_regional_buckets: true
-  name: quickstart-selling-partner-api-reports-notifications
+  name: quickstart-amazon-selling-partner-api-reports-notifications
   owner: quickstart-eng@amazon.com
   regions:
     - us-east-2
