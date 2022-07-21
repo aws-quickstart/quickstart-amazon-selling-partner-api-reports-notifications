@@ -23,12 +23,12 @@ Parameters:
   AccessKey:
     Type: String
     MinLength: 1
-    Description: Access Key of the IAM User
+    Description: Access Key of the IAM User that will assume the IAM Role registered in the SP-API app
     NoEcho: true
   SecretKey:
     Type: String
     MinLength: 1
-    Description: Secret Key of he IAM User
+    Description: Secret Key of the IAM User that will assume the IAM Role registered in the SP-API app
     NoEcho: true
   RoleArn:
     Type: String
